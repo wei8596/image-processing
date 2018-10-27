@@ -1,0 +1,13 @@
+D:\image_processing\course\imageProcess\imageProcess\bin\Debug\imageProcess.exe.config
+D:\image_processing\course\imageProcess\imageProcess\bin\Debug\imageProcess.exe
+D:\image_processing\course\imageProcess\imageProcess\bin\Debug\imageProcess.pdb
+D:\image_processing\course\imageProcess\imageProcess\obj\Debug\imageProcess.csprojAssemblyReference.cache
+D:\image_processing\course\imageProcess\imageProcess\obj\Debug\imageProcess.Properties.Resources.resources
+D:\image_processing\course\imageProcess\imageProcess\obj\Debug\imageProcess.csproj.GenerateResource.cache
+D:\image_processing\course\imageProcess\imageProcess\obj\Debug\imageProcess.csproj.CoreCompileInputs.cache
+D:\image_processing\course\imageProcess\imageProcess\obj\Debug\imageProcess.exe
+D:\image_processing\course\imageProcess\imageProcess\obj\Debug\imageProcess.pdb
+D:\image_processing\course\imageProcess\imageProcess\obj\Debug\imageProcess.FormMain.resources
+D:\image_processing\course\imageProcess\imageProcess\obj\Debug\imageProcess.FormRotate.resources
+D:\image_processing\course\imageProcess\imageProcess\obj\Debug\imageProcess.Splashscreen.resources
+D:\image_processing\course\imageProcess\imageProcess\obj\Debug\imageProcess.FormMirror.resources

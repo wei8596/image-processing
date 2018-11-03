@@ -1,5 +1,4 @@
-# Image Processing
-PCX Image Processing
+# PCX Image Processing
 ![image](https://github.com/wei8596/image-processing/blob/master/mainScreen.png)
 
 ## Tools

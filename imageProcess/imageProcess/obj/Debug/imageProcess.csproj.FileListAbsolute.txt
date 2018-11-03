@@ -11,3 +11,14 @@ D:\image_processing\course\imageProcess\imageProcess\obj\Debug\imageProcess.Form
 D:\image_processing\course\imageProcess\imageProcess\obj\Debug\imageProcess.FormRotate.resources
 D:\image_processing\course\imageProcess\imageProcess\obj\Debug\imageProcess.Splashscreen.resources
 D:\image_processing\course\imageProcess\imageProcess\obj\Debug\imageProcess.FormMirror.resources
+D:\image_processing\course\imageProcess\imageProcess\obj\Debug\imageProcess.FormRGB.resources
+D:\image_processing\course\imageProcess\imageProcess\obj\Debug\imageProcess.FormThreshold.resources
+D:\image_processing\course\imageProcess\imageProcess\obj\Debug\imageProcess.FormGray.resources
+D:\image_processing\course\imageProcess\imageProcess\obj\Debug\imageProcess.FormInvert.resources
+D:\image_processing\course\imageProcess\imageProcess\obj\Debug\imageProcess.FormZoom.resources
+D:\image_processing\course\imageProcess\imageProcess\obj\Debug\imageProcess.FormTransparency.resources
+D:\image_processing\course\imageProcess\imageProcess\obj\Debug\imageProcess.FormBitPlane.resources
+D:\image_processing\course\imageProcess\imageProcess\obj\Debug\imageProcess.FormHistEqual.resources
+D:\image_processing\course\imageProcess\imageProcess\obj\Debug\imageProcess.FormContrastStretch.resources
+D:\image_processing\course\imageProcess\imageProcess\obj\Debug\imageProcess.FormHistSpec.resources
+D:\image_processing\course\imageProcess\imageProcess\obj\Debug\imageProcess.FormOutlier.resources

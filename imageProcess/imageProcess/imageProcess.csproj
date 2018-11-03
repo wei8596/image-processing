@@ -47,6 +47,42 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FormBitPlane.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormBitPlane.Designer.cs">
+      <DependentUpon>FormBitPlane.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormContrastStretch.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormContrastStretch.Designer.cs">
+      <DependentUpon>FormContrastStretch.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormGray.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormGray.Designer.cs">
+      <DependentUpon>FormGray.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormHistEqual.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormHistEqual.Designer.cs">
+      <DependentUpon>FormHistEqual.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormHistSpec.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormHistSpec.Designer.cs">
+      <DependentUpon>FormHistSpec.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormInvert.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormInvert.Designer.cs">
+      <DependentUpon>FormInvert.cs</DependentUpon>
+    </Compile>
     <Compile Include="FormMain.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -59,11 +95,41 @@
     <Compile Include="FormMirror.Designer.cs">
       <DependentUpon>FormMirror.cs</DependentUpon>
     </Compile>
+    <Compile Include="FormOutlier.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormOutlier.Designer.cs">
+      <DependentUpon>FormOutlier.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormRGB.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormRGB.Designer.cs">
+      <DependentUpon>FormRGB.cs</DependentUpon>
+    </Compile>
     <Compile Include="FormRotate.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="FormRotate.Designer.cs">
       <DependentUpon>FormRotate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormThreshold.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormThreshold.Designer.cs">
+      <DependentUpon>FormThreshold.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormTransparency.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormTransparency.Designer.cs">
+      <DependentUpon>FormTransparency.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormZoom.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormZoom.Designer.cs">
+      <DependentUpon>FormZoom.cs</DependentUpon>
     </Compile>
     <Compile Include="ImgPcx.cs" />
     <Compile Include="Program.cs" />
@@ -74,14 +140,47 @@
     <Compile Include="Splashscreen.Designer.cs">
       <DependentUpon>Splashscreen.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="FormBitPlane.resx">
+      <DependentUpon>FormBitPlane.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormContrastStretch.resx">
+      <DependentUpon>FormContrastStretch.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormGray.resx">
+      <DependentUpon>FormGray.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormHistEqual.resx">
+      <DependentUpon>FormHistEqual.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormHistSpec.resx">
+      <DependentUpon>FormHistSpec.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormInvert.resx">
+      <DependentUpon>FormInvert.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="FormMain.resx">
       <DependentUpon>FormMain.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FormMirror.resx">
       <DependentUpon>FormMirror.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="FormOutlier.resx">
+      <DependentUpon>FormOutlier.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormRGB.resx">
+      <DependentUpon>FormRGB.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="FormRotate.resx">
       <DependentUpon>FormRotate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormThreshold.resx">
+      <DependentUpon>FormThreshold.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormTransparency.resx">
+      <DependentUpon>FormTransparency.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormZoom.resx">
+      <DependentUpon>FormZoom.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

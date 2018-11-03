@@ -14,14 +14,21 @@ namespace imageProcess
     {
         public FormMain()
         {
-            // 使用thread執行splash screen(載入畫面)
-            Thread t = new Thread(new ThreadStart(StartForm));
-            t.Start();
-            Thread.Sleep(2000);
+            try
+            {
+                // 使用thread執行splash screen(載入畫面)
+                Thread t = new Thread(new ThreadStart(StartForm));
+                t.Start();
+                Thread.Sleep(2000);
 
-            InitializeComponent();
-            // 載入完成後結束splash screen
-            t.Abort();
+                InitializeComponent();
+                // 載入完成後結束splash screen
+                t.Abort();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
 
         // thread start function
@@ -35,10 +42,13 @@ namespace imageProcess
             // 未開檔時, 無法使用存檔與工具
             menuSave.Enabled = false;
             menuTool.Enabled = false;
+            menuFilter.Enabled = false;
         }
 
         // PCX物件
-        ImgPcx pcxOrigin, pcxAfter;
+        ImgPcx pcxOrigin;
+        // 原始影像灰階圖
+        ImgPcx pcxGray;
 
         // 讀檔
         private void menuOpen_Click(object sender, EventArgs e)
@@ -47,16 +57,19 @@ namespace imageProcess
             {
                 // 清空顯示圖片與資訊
                 pictureBox1.Image = null;
-                pictureBox2.Image = null;
                 pictureBox3.Image = null;
-                labelInfo.Text = "";
+                textBoxInfo.Text = "";
                 labelXY.Text = "";
+                labelR.Text = "";
+                labelG.Text = "";
+                labelB.Text = "";
+                labelDim.Text = "";
                 chart1.Visible = false;
 
                 OpenFileDialog openFileDialog = new OpenFileDialog();
                 openFileDialog.Title = "開啟圖檔";
                 openFileDialog.Filter = "pcx files (*.pcx)|*.pcx";
-                if (openFileDialog.ShowDialog() == DialogResult.OK)
+                if (openFileDialog.ShowDialog() == DialogResult.OK && openFileDialog.FileName.Length > 0)
                 {
                     pcxOrigin = new ImgPcx(openFileDialog.FileName);
 
@@ -66,16 +79,16 @@ namespace imageProcess
                     // 將載入的圖像放到pictureBox1
                     pictureBox1.Image = pcxOrigin.pcxImg;
                     // 顯示圖像header資訊
-                    labelInfo.Text = pcxOrigin.PrintInfo();
+                    textBoxInfo.Text = pcxOrigin.PrintInfo();
                     // nPlanes = 3, 無調色盤
                     if (pcxOrigin.head.nPlanes == 1)
                     {
                         // 畫出調色盤
-                        var colors = pcxOrigin.pcxImg.Palette.Entries;            // 取得調色盤
+                        var colors = pcxOrigin.pcxImg.Palette.Entries;      // 取得調色盤
                         int cntColors = colors.Count();                     // 計算顏色總數 (ex: 256)
                         int row = cntColors / 8;                            // (ex: 256 / 8 = 32)
                         int column = cntColors / 32;                        // (ex: 256 / 32 = 8)
-                        Bitmap palette = new Bitmap(row * 50, column * 50); // 建立調色盤圖像
+                        Bitmap palette = new Bitmap(row * 14, column * 14); // 建立調色盤圖像
                         Graphics g = Graphics.FromImage(palette);           // 繪圖介面
 
                         /*
@@ -89,27 +102,94 @@ namespace imageProcess
                             // 挑出顏色給筆刷
                             SolidBrush brush = new SolidBrush(Color.FromArgb(colors[i].A, colors[i].R, colors[i].G, colors[i].B));
                             // 畫矩形
-                            g.FillRectangle(brush, curX, curY, 10, 10);
+                            g.FillRectangle(brush, curX, curY, 14, 14);
                             ++cnt;
                             if (cnt == row) // 換行繼續畫
                             {
                                 curX = 0;
-                                curY += 10;
+                                curY += 14;
                                 cnt = 0;
                             }
                             else           // 右移繼續畫
                             {
-                                curX += 10;
+                                curX += 14;
                             }
                         }
                         // 顯示調色盤
                         pictureBox3.Image = palette;
-                        // 顯示圖像長寬
-                        labelDim.Text = pcxOrigin.head.width.ToString() + " x " + pcxOrigin.head.height.ToString();
                     }
+                    // 顯示圖像長寬
+                    labelDim.Text = pcxOrigin.head.width.ToString() + " x " + pcxOrigin.head.height.ToString();
+
                     // 開檔後, 開放使用存檔與工具
                     menuSave.Enabled = true;
                     menuTool.Enabled = true;
+                    menuFilter.Enabled = true;
+
+                    // 預先製作並保存灰階影像
+                    pcxGray = new ImgPcx(pcxOrigin);
+                    pcxGray.Gray();
+
+                    // 清除圖表資料(可重複使用)
+                    chart1.Series.Clear();
+
+                    // 繪製histogram
+                    Bitmap origin = (Bitmap)pictureBox1.Image;
+                    Bitmap target = origin.Clone(new Rectangle(0, 0, origin.Width, origin.Height), PixelFormat.Format24bppRgb);
+                    int w = target.Width;
+                    int h = target.Height;
+                    double[] yValue1 = new double[256];
+                    double[] yValue2 = new double[256];
+                    double[] yValue3 = new double[256];
+                    Array.Clear(yValue1, 0, yValue1.Length);
+                    Array.Clear(yValue2, 0, yValue2.Length);
+                    Array.Clear(yValue3, 0, yValue3.Length);
+                    for (int x = 0; x < w; ++x)
+                    {
+                        for (int y = 0; y < h; ++y)
+                        {
+                            Color c = target.GetPixel(x, y);
+                            int r = c.R;
+                            int g = c.G;
+                            int b = c.B;
+                            ++yValue1[r];
+                            ++yValue2[g];
+                            ++yValue3[b];
+                        }
+                    }
+                    // 將點個數轉換為頻率
+                    int total = w * h * 3;
+                    for (int i = 0; i < 256; ++i)
+                    {
+                        yValue1[i] /= total;
+                        yValue2[i] /= total;
+                        yValue3[i] /= total;
+                    }
+
+                    // Range(start, cnt)
+                    string[] xValue = Enumerable.Range(0, 256).ToArray().Select(x => x.ToString()).ToArray();
+                    // 設定x軸區間
+                    chart1.ChartAreas["ChartArea1"].AxisX.Interval = 32;
+                    chart1.Series.Add("R");
+                    chart1.Series.Add("G");
+                    chart1.Series.Add("B");
+                    chart1.Series["R"].ChartType = SeriesChartType.Column;
+                    chart1.Series["R"].Points.DataBindXY(xValue, yValue1);
+                    chart1.Series["R"].Color = Color.FromArgb(150, Color.Red); // 半透明顏色
+                    chart1.Series["G"].ChartType = SeriesChartType.Column;
+                    chart1.Series["G"].Points.DataBindXY(xValue, yValue2);
+                    chart1.Series["G"].Color = Color.FromArgb(150, Color.Green);
+                    chart1.Series["B"].ChartType = SeriesChartType.Column;
+                    chart1.Series["B"].Points.DataBindXY(xValue, yValue3);
+                    chart1.Series["B"].Color = Color.FromArgb(150, Color.Blue);
+                    chart1.Visible = true;
+                }
+                else
+                {
+                    // 開檔失敗, 無法使用存檔與工具
+                    menuSave.Enabled = false;
+                    menuTool.Enabled = false;
+                    menuFilter.Enabled = false;
                 }
             }
             catch (Exception ex)
@@ -128,19 +208,10 @@ namespace imageProcess
                 if (saveFileDialog.ShowDialog() == DialogResult.OK && saveFileDialog.FileName != "")
                 {
                     FileStream fs = (FileStream)saveFileDialog.OpenFile();
-                    Bitmap origin, target;
-                    if (pictureBox2.Image == null)
-                    {
-                        origin = (Bitmap)pictureBox1.Image;
-                        target = origin.Clone(new Rectangle(0, 0, origin.Width, origin.Height), PixelFormat.Format8bppIndexed);
-                        //target.Save(fs, ImageFormat.Bmp);
-                    }
-                    else
-                    {
-                        origin = (Bitmap)pictureBox2.Image;
-                        target = origin.Clone(new Rectangle(0, 0, origin.Width, origin.Height), PixelFormat.Format8bppIndexed);
-                        //target.Save(fs, ImageFormat.Bmp);
-                    }
+                    Bitmap origin = (Bitmap)pictureBox1.Image;
+                    Bitmap target = origin.Clone(new Rectangle(0, 0, origin.Width, origin.Height), PixelFormat.Format8bppIndexed);
+                    //target.Save(fs, ImageFormat.Bmp);
+
                     /*MemoryStream ms = new MemoryStream();
                     target.Save(ms, ImageFormat.Bmp);
                     byte[] bytes = ms.ToArray();*/
@@ -157,40 +228,23 @@ namespace imageProcess
             }
         }
 
-        // 直方圖參數
-        string histogramFlag = "";
-
-        // 負片
+        // 開啟負片功能視窗
         private void menuInvert_Click(object sender, EventArgs e)
         {
-            try
-            {
-                pcxAfter = new ImgPcx(pcxOrigin);
-                pcxAfter.Invert();
-                pictureBox2.Image = pcxAfter.pcxImg;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
+            FormInvert f = new FormInvert();    // 建立FormInvert物件
+            f.pcxOrigin = pcxOrigin;            // 傳送ImgPcx物件
+            f.pcxGray = pcxGray;
+            f.ShowDialog(this);                 // 設定FormInvert為FormMain的上層，並開啟FormInvert視窗
+                                                // 由於在FormMain的程式碼內使用this，所以this為FormMain物件本身
         }
 
-        // 灰階
+        // 開啟灰階功能視窗
         private void menuGray_Click(object sender, EventArgs e)
         {
-            try
-            {
-                histogramFlag = "Gray";
-
-                pcxAfter = new ImgPcx(pcxOrigin);
-                pcxAfter.Gray();
-                pictureBox2.Image = pcxAfter.pcxImg;
-
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
+            FormGray f = new FormGray();    // 建立FormGray物件
+            f.pcxOrigin = pcxOrigin;        // 傳送ImgPcx物件
+            f.ShowDialog(this);             // 設定FormGray為FormMain的上層，並開啟FormGray視窗
+                                            // 由於在FormMain的程式碼內使用this，所以this為FormMain物件本身
         }
 
         // 取得滑鼠座標
@@ -231,105 +285,6 @@ namespace imageProcess
                 MessageBox.Show(ex.Message);
             }
         }
-        
-        // 直方圖
-        private void menuHistogram_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                // 清除圖表資料(可重複使用)
-                chart1.Legends.Clear();
-                chart1.Series.Clear();
-
-                Bitmap origin;
-                if (pictureBox2.Image == null)
-                {
-                    origin = (Bitmap)pictureBox1.Image;
-                }
-                else
-                {
-                    origin = (Bitmap)pictureBox2.Image;
-                }
-                Bitmap target = origin.Clone(new Rectangle(0, 0, origin.Width, origin.Height), PixelFormat.Format24bppRgb);
-                int w = target.Width;
-                int h = target.Height;
-                double[] yValue1 = new double[256];
-                double[] yValue2 = new double[256];
-                double[] yValue3 = new double[256];
-                Array.Clear(yValue1, 0, yValue1.Length);
-                Array.Clear(yValue2, 0, yValue2.Length);
-                Array.Clear(yValue3, 0, yValue3.Length);
-                for (int x = 0; x < w; ++x)
-                {
-                    for (int y = 0; y < h; ++y)
-                    {
-                        Color c = target.GetPixel(x, y);
-                        int r = c.R;
-                        int g = c.G;
-                        int b = c.B;
-                        switch (histogramFlag)
-                        {
-                            case "Gray":
-                                ++yValue1[r];
-                                ++yValue1[g];
-                                ++yValue1[b];
-                                break;
-                            default:
-                                ++yValue1[r];
-                                ++yValue2[g];
-                                ++yValue3[b];
-                                break;
-                        }
-                    }
-                }
-                // 將點個數轉換為頻率
-                int size = w * h;
-                for (int i = 0; i < 256; ++i)
-                {
-                    yValue1[i] /= size;
-                    yValue2[i] /= size;
-                    yValue3[i] /= size;
-                }
-
-                // Range(start, cnt)
-                string[] xValue = Enumerable.Range(0, 256).ToArray().Select(x => x.ToString()).ToArray();
-                //chart1.Titles.Add("直方圖");
-                switch (histogramFlag)
-                {
-                    case "Gray":
-                        // Intensities - 強度
-                        chart1.Legends.Add("Intensities"); // 圖例
-                        chart1.Series.Add("Intensities"); // 資料序列集合
-                        chart1.Series["Intensities"].ChartType = SeriesChartType.Column; // 直方圖
-                        chart1.Series["Intensities"].Points.DataBindXY(xValue, yValue1);
-                        break;
-                    default:
-                        chart1.Legends.Add("R");
-                        chart1.Legends.Add("G");
-                        chart1.Legends.Add("B");
-                        chart1.Series.Add("R");
-                        chart1.Series.Add("G");
-                        chart1.Series.Add("B");
-                        chart1.Series["R"].ChartType = SeriesChartType.Column;
-                        chart1.Series["R"].Points.DataBindXY(xValue, yValue1);
-                        chart1.Series["R"].Color = Color.FromArgb(150, Color.Red); // 半透明顏色
-                        chart1.Series["G"].ChartType = SeriesChartType.Column;
-                        chart1.Series["G"].Points.DataBindXY(xValue, yValue2);
-                        chart1.Series["G"].Color = Color.FromArgb(150, Color.Green);
-                        chart1.Series["B"].ChartType = SeriesChartType.Column;
-                        chart1.Series["B"].Points.DataBindXY(xValue, yValue3);
-                        chart1.Series["B"].Color = Color.FromArgb(150, Color.Blue);
-                        break;
-                }
-                chart1.Visible = true;
-                // 重設標籤
-                histogramFlag = "";
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
-        }
 
         // 開啟鏡像功能視窗
         private void menuMirror_Click(object sender, EventArgs e)
@@ -346,6 +301,87 @@ namespace imageProcess
             FormRotate f = new FormRotate();    // 建立FormRotate物件
             f.pcxOrigin = pcxOrigin;            // 傳送ImgPcx物件
             f.ShowDialog(this);                 // 設定FormRotate為FormMain的上層，並開啟FormRotate視窗
+                                                // 由於在FormMain的程式碼內使用this，所以this為FormMain物件本身
+        }
+
+        // 開啟顯示RGB畫面視窗
+        private void menuRGB_Click(object sender, EventArgs e)
+        {
+            FormRGB f = new FormRGB();    // 建立FormRGB物件
+            f.pcxOrigin = pcxOrigin;            // 傳送ImgPcx物件
+            f.ShowDialog(this);                 // 設定FormRGB為FormMain的上層，並開啟FormRGB視窗
+                                                // 由於在FormMain的程式碼內使用this，所以this為FormMain物件本身
+        }
+
+        // 開啟Thresholding功能視窗
+        private void menuThreshold_Click(object sender, EventArgs e)
+        {
+            FormThreshold f = new FormThreshold();  // 建立FormThreshold物件
+            f.pcxGray = pcxGray;                    // 傳送灰階圖像
+            f.ShowDialog(this);                     // 設定FormThreshold為FormMain的上層，並開啟FormThreshold視窗
+                                                    // 由於在FormMain的程式碼內使用this，所以this為FormMain物件本身
+        }
+
+        // 開啟縮放功能視窗
+        private void menuZoom_Click(object sender, EventArgs e)
+        {
+            FormZoom f = new FormZoom();    // 建立FormZoom物件
+            f.pcxOrigin = pcxOrigin;        // 傳送ImgPcx物件
+            f.ShowDialog(this);             // 設定FormZoom為FormMain的上層，並開啟FormZoom視窗
+                                            // 由於在FormMain的程式碼內使用this，所以this為FormMain物件本身
+        }
+
+        // 開啟透明度功能視窗
+        private void menuTransparency_Click(object sender, EventArgs e)
+        {
+            FormTransparency f = new FormTransparency();    // 建立FormTransparency物件
+            f.pcxOrigin = pcxOrigin;                        // 傳送ImgPcx物件
+            f.ShowDialog(this);                             // 設定FormTransparency為FormMain的上層，並開啟FormTransparency視窗
+                                                            // 由於在FormMain的程式碼內使用this，所以this為FormMain物件本身
+        }
+
+        // 開啟Bit-plane slicing功能視窗
+        private void menuBitPlane_Click(object sender, EventArgs e)
+        {
+            FormBitPlane f = new FormBitPlane();    // 建立FormBitPlane物件
+            f.pcxGray = pcxGray;                    // 傳送灰階圖像
+            f.ShowDialog(this);                     // 設定FormBitPlane為FormMain的上層，並開啟FormBitPlane視窗
+                                                    // 由於在FormMain的程式碼內使用this，所以this為FormMain物件本身
+        }
+
+        // 開啟Histogram Equalization功能視窗
+        private void menuHistEqual_Click(object sender, EventArgs e)
+        {
+            FormHistEqual f = new FormHistEqual();  // 建立FormHistEqual物件
+            f.pcxGray = pcxGray;                    // 傳送灰階圖像
+            f.ShowDialog(this);                     // 設定FormHistEqual為FormMain的上層，並開啟FormHistEqual視窗
+                                                    // 由於在FormMain的程式碼內使用this，所以this為FormMain物件本身
+        }
+
+        // 開啟Histogram Equalization功能視窗
+        private void menuContrastStretch_Click(object sender, EventArgs e)
+        {
+            FormContrastStretch f = new FormContrastStretch();  // 建立FormContrastStretch物件
+            f.pcxGray = pcxGray;                                // 傳送灰階圖像
+            f.ShowDialog(this);                                 // 設定FormContrastStretch為FormMain的上層，並開啟FormContrastStretch視窗
+                                                                // 由於在FormMain的程式碼內使用this，所以this為FormMain物件本身
+        }
+
+        // 開啟Histogram Specification功能視窗
+        private void menuHistSpec_Click(object sender, EventArgs e)
+        {
+            FormHistSpec f = new FormHistSpec();    // 建立FormContrastStretch物件
+            f.pcxGray = pcxGray;                    // 傳送灰階圖像
+            f.ShowDialog(this);                     // 設定FormContrastStretch為FormMain的上層，並開啟FormContrastStretch視窗
+                                                    // 由於在FormMain的程式碼內使用this，所以this為FormMain物件本身
+        }
+
+        // 開啟Outlier功能視窗
+        private void menuOutlier_Click(object sender, EventArgs e)
+        {
+            FormOutlier f = new FormOutlier();  // 建立FormOutlier物件
+            f.pcxGray = pcxGray;                // 傳送灰階圖像
+            f.ShowDialog(this);                 // 設定FormOutlier為FormMain的上層，並開啟FormOutlier視窗
                                                 // 由於在FormMain的程式碼內使用this，所以this為FormMain物件本身
         }
     }

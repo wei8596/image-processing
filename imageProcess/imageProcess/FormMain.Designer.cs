@@ -28,12 +28,12 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormMain));
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.textBoxInfo = new System.Windows.Forms.TextBox();
             this.pictureBox3 = new System.Windows.Forms.PictureBox();
-            this.labelInfo = new System.Windows.Forms.Label();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.chart1 = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.labelXY = new System.Windows.Forms.Label();
@@ -46,16 +46,24 @@
             this.menuTool = new System.Windows.Forms.ToolStripMenuItem();
             this.menuInvert = new System.Windows.Forms.ToolStripMenuItem();
             this.menuGray = new System.Windows.Forms.ToolStripMenuItem();
-            this.menuHistogram = new System.Windows.Forms.ToolStripMenuItem();
             this.menuMirror = new System.Windows.Forms.ToolStripMenuItem();
             this.menuRotate = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuRGB = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuThreshold = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuZoom = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuTransparency = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuBitPlane = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuHistEqual = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
             this.labelB = new System.Windows.Forms.Label();
             this.labelG = new System.Windows.Forms.Label();
             this.labelR = new System.Windows.Forms.Label();
             this.labelDim = new System.Windows.Forms.Label();
+            this.menuContrastStretch = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuHistSpec = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuFilter = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuOutlier = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).BeginInit();
             this.groupBox3.SuspendLayout();
@@ -76,19 +84,9 @@
             this.pictureBox1.TabStop = false;
             this.pictureBox1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.pictureBox1_MouseMove);
             // 
-            // pictureBox2
-            // 
-            this.pictureBox2.Location = new System.Drawing.Point(9, 23);
-            this.pictureBox2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.pictureBox2.Name = "pictureBox2";
-            this.pictureBox2.Size = new System.Drawing.Size(300, 300);
-            this.pictureBox2.TabIndex = 4;
-            this.pictureBox2.TabStop = false;
-            // 
             // groupBox2
             // 
-            this.groupBox2.Controls.Add(this.pictureBox3);
-            this.groupBox2.Controls.Add(this.labelInfo);
+            this.groupBox2.Controls.Add(this.textBoxInfo);
             this.groupBox2.Location = new System.Drawing.Point(389, 52);
             this.groupBox2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.groupBox2.Name = "groupBox2";
@@ -98,22 +96,29 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "資訊";
             // 
+            // textBoxInfo
+            // 
+            this.textBoxInfo.BackColor = System.Drawing.SystemColors.Control;
+            this.textBoxInfo.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.textBoxInfo.CausesValidation = false;
+            this.textBoxInfo.Cursor = System.Windows.Forms.Cursors.Default;
+            this.textBoxInfo.Enabled = false;
+            this.textBoxInfo.Font = new System.Drawing.Font("微軟正黑體", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
+            this.textBoxInfo.Location = new System.Drawing.Point(6, 20);
+            this.textBoxInfo.Multiline = true;
+            this.textBoxInfo.Name = "textBoxInfo";
+            this.textBoxInfo.ReadOnly = true;
+            this.textBoxInfo.Size = new System.Drawing.Size(453, 320);
+            this.textBoxInfo.TabIndex = 2;
+            this.textBoxInfo.TabStop = false;
+            // 
             // pictureBox3
             // 
-            this.pictureBox3.Location = new System.Drawing.Point(139, 263);
+            this.pictureBox3.Location = new System.Drawing.Point(6, 22);
             this.pictureBox3.Name = "pictureBox3";
-            this.pictureBox3.Size = new System.Drawing.Size(320, 80);
+            this.pictureBox3.Size = new System.Drawing.Size(448, 112);
             this.pictureBox3.TabIndex = 1;
             this.pictureBox3.TabStop = false;
-            // 
-            // labelInfo
-            // 
-            this.labelInfo.AutoSize = true;
-            this.labelInfo.Font = new System.Drawing.Font("微軟正黑體", 10F);
-            this.labelInfo.Location = new System.Drawing.Point(6, 20);
-            this.labelInfo.Name = "labelInfo";
-            this.labelInfo.Size = new System.Drawing.Size(0, 18);
-            this.labelInfo.TabIndex = 0;
             // 
             // groupBox3
             // 
@@ -127,8 +132,8 @@
             // 
             // chart1
             // 
-            chartArea2.Name = "ChartArea1";
-            this.chart1.ChartAreas.Add(chartArea2);
+            chartArea1.Name = "ChartArea1";
+            this.chart1.ChartAreas.Add(chartArea1);
             this.chart1.Location = new System.Drawing.Point(10, 23);
             this.chart1.Name = "chart1";
             this.chart1.Size = new System.Drawing.Size(300, 250);
@@ -155,19 +160,20 @@
             // 
             // groupBox4
             // 
-            this.groupBox4.Controls.Add(this.pictureBox2);
+            this.groupBox4.Controls.Add(this.pictureBox3);
             this.groupBox4.Location = new System.Drawing.Point(389, 456);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Size = new System.Drawing.Size(465, 350);
             this.groupBox4.TabIndex = 8;
             this.groupBox4.TabStop = false;
-            this.groupBox4.Text = "處理結果";
+            this.groupBox4.Text = "調色盤";
             // 
             // menuStrip1
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.menuFile,
-            this.menuTool});
+            this.menuTool,
+            this.menuFilter});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(866, 24);
@@ -206,11 +212,18 @@
             // menuTool
             // 
             this.menuTool.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.menuInvert,
             this.menuGray,
-            this.menuHistogram,
+            this.menuInvert,
             this.menuMirror,
-            this.menuRotate});
+            this.menuRotate,
+            this.menuRGB,
+            this.menuThreshold,
+            this.menuZoom,
+            this.menuTransparency,
+            this.menuBitPlane,
+            this.menuContrastStretch,
+            this.menuHistEqual,
+            this.menuHistSpec});
             this.menuTool.Name = "menuTool";
             this.menuTool.Size = new System.Drawing.Size(43, 20);
             this.menuTool.Text = "工具";
@@ -218,37 +231,72 @@
             // menuInvert
             // 
             this.menuInvert.Name = "menuInvert";
-            this.menuInvert.Size = new System.Drawing.Size(110, 22);
-            this.menuInvert.Text = "負片";
+            this.menuInvert.Size = new System.Drawing.Size(209, 22);
+            this.menuInvert.Text = "Negative";
             this.menuInvert.Click += new System.EventHandler(this.menuInvert_Click);
             // 
             // menuGray
             // 
             this.menuGray.Name = "menuGray";
-            this.menuGray.Size = new System.Drawing.Size(110, 22);
-            this.menuGray.Text = "灰階";
+            this.menuGray.Size = new System.Drawing.Size(209, 22);
+            this.menuGray.Text = "Gray Level";
             this.menuGray.Click += new System.EventHandler(this.menuGray_Click);
-            // 
-            // menuHistogram
-            // 
-            this.menuHistogram.Name = "menuHistogram";
-            this.menuHistogram.Size = new System.Drawing.Size(110, 22);
-            this.menuHistogram.Text = "直方圖";
-            this.menuHistogram.Click += new System.EventHandler(this.menuHistogram_Click);
             // 
             // menuMirror
             // 
             this.menuMirror.Name = "menuMirror";
-            this.menuMirror.Size = new System.Drawing.Size(110, 22);
-            this.menuMirror.Text = "鏡像";
+            this.menuMirror.Size = new System.Drawing.Size(209, 22);
+            this.menuMirror.Text = "Mirror";
             this.menuMirror.Click += new System.EventHandler(this.menuMirror_Click);
             // 
             // menuRotate
             // 
             this.menuRotate.Name = "menuRotate";
-            this.menuRotate.Size = new System.Drawing.Size(110, 22);
-            this.menuRotate.Text = "旋轉";
+            this.menuRotate.Size = new System.Drawing.Size(209, 22);
+            this.menuRotate.Text = "Rotate";
             this.menuRotate.Click += new System.EventHandler(this.menuRotate_Click);
+            // 
+            // menuRGB
+            // 
+            this.menuRGB.Name = "menuRGB";
+            this.menuRGB.Size = new System.Drawing.Size(209, 22);
+            this.menuRGB.Text = "RGB Color";
+            this.menuRGB.Click += new System.EventHandler(this.menuRGB_Click);
+            // 
+            // menuThreshold
+            // 
+            this.menuThreshold.Name = "menuThreshold";
+            this.menuThreshold.Size = new System.Drawing.Size(209, 22);
+            this.menuThreshold.Text = "Thresholding";
+            this.menuThreshold.Click += new System.EventHandler(this.menuThreshold_Click);
+            // 
+            // menuZoom
+            // 
+            this.menuZoom.Name = "menuZoom";
+            this.menuZoom.Size = new System.Drawing.Size(209, 22);
+            this.menuZoom.Text = "Scaling";
+            this.menuZoom.Click += new System.EventHandler(this.menuZoom_Click);
+            // 
+            // menuTransparency
+            // 
+            this.menuTransparency.Name = "menuTransparency";
+            this.menuTransparency.Size = new System.Drawing.Size(209, 22);
+            this.menuTransparency.Text = "Transparency";
+            this.menuTransparency.Click += new System.EventHandler(this.menuTransparency_Click);
+            // 
+            // menuBitPlane
+            // 
+            this.menuBitPlane.Name = "menuBitPlane";
+            this.menuBitPlane.Size = new System.Drawing.Size(209, 22);
+            this.menuBitPlane.Text = "Bit-plane Slicing";
+            this.menuBitPlane.Click += new System.EventHandler(this.menuBitPlane_Click);
+            // 
+            // menuHistEqual
+            // 
+            this.menuHistEqual.Name = "menuHistEqual";
+            this.menuHistEqual.Size = new System.Drawing.Size(209, 22);
+            this.menuHistEqual.Text = "Histogram Equalization";
+            this.menuHistEqual.Click += new System.EventHandler(this.menuHistEqual_Click);
             // 
             // groupBox5
             // 
@@ -295,6 +343,35 @@
             this.labelDim.Size = new System.Drawing.Size(0, 16);
             this.labelDim.TabIndex = 1;
             // 
+            // menuContrastStretch
+            // 
+            this.menuContrastStretch.Name = "menuContrastStretch";
+            this.menuContrastStretch.Size = new System.Drawing.Size(209, 22);
+            this.menuContrastStretch.Text = "Contrast Stretching";
+            this.menuContrastStretch.Click += new System.EventHandler(this.menuContrastStretch_Click);
+            // 
+            // menuHistSpec
+            // 
+            this.menuHistSpec.Name = "menuHistSpec";
+            this.menuHistSpec.Size = new System.Drawing.Size(209, 22);
+            this.menuHistSpec.Text = "Histogram Specification";
+            this.menuHistSpec.Click += new System.EventHandler(this.menuHistSpec_Click);
+            // 
+            // menuFilter
+            // 
+            this.menuFilter.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.menuOutlier});
+            this.menuFilter.Name = "menuFilter";
+            this.menuFilter.Size = new System.Drawing.Size(55, 20);
+            this.menuFilter.Text = "濾波器";
+            // 
+            // menuOutlier
+            // 
+            this.menuOutlier.Name = "menuOutlier";
+            this.menuOutlier.Size = new System.Drawing.Size(180, 22);
+            this.menuOutlier.Text = "Outlier";
+            this.menuOutlier.Click += new System.EventHandler(this.menuOutlier_Click);
+            // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 16F);
@@ -307,13 +384,13 @@
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.menuStrip1);
             this.Font = new System.Drawing.Font("微軟正黑體", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
             this.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.Name = "FormMain";
-            this.Text = "PCX - B043040003";
+            this.Text = "Image_Processing  By ChenWeiFan";
             this.Load += new System.EventHandler(this.FormMain_Load);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).EndInit();
@@ -332,9 +409,7 @@
 
         #endregion
         private System.Windows.Forms.PictureBox pictureBox1;
-        private System.Windows.Forms.PictureBox pictureBox2;
         private System.Windows.Forms.GroupBox groupBox2;
-        private System.Windows.Forms.Label labelInfo;
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.Label labelXY;
         private System.Windows.Forms.GroupBox groupBox1;
@@ -347,7 +422,6 @@
         private System.Windows.Forms.ToolStripMenuItem menuTool;
         private System.Windows.Forms.ToolStripMenuItem menuInvert;
         private System.Windows.Forms.ToolStripMenuItem menuGray;
-        private System.Windows.Forms.ToolStripMenuItem menuHistogram;
         private System.Windows.Forms.PictureBox pictureBox3;
         private System.Windows.Forms.GroupBox groupBox5;
         private System.Windows.Forms.Label labelDim;
@@ -356,6 +430,17 @@
         private System.Windows.Forms.Label labelG;
         private System.Windows.Forms.Label labelR;
         private System.Windows.Forms.ToolStripMenuItem menuRotate;
+        private System.Windows.Forms.ToolStripMenuItem menuRGB;
+        private System.Windows.Forms.ToolStripMenuItem menuThreshold;
+        private System.Windows.Forms.TextBox textBoxInfo;
+        private System.Windows.Forms.ToolStripMenuItem menuZoom;
+        private System.Windows.Forms.ToolStripMenuItem menuTransparency;
+        private System.Windows.Forms.ToolStripMenuItem menuBitPlane;
+        private System.Windows.Forms.ToolStripMenuItem menuHistEqual;
+        private System.Windows.Forms.ToolStripMenuItem menuContrastStretch;
+        private System.Windows.Forms.ToolStripMenuItem menuHistSpec;
+        private System.Windows.Forms.ToolStripMenuItem menuFilter;
+        private System.Windows.Forms.ToolStripMenuItem menuOutlier;
     }
 }
 

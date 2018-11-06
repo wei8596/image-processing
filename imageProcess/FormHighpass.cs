@@ -3,21 +3,21 @@ using System.Windows.Forms;
 
 namespace imageProcess
 {
-    public partial class FormLowpass : Form
+    public partial class FormHighpass : Form
     {
         // PCX物件
         public ImgPcx pcxGray, pcxAfter;
 
-        public FormLowpass()
+        public FormHighpass()
         {
             InitializeComponent();
         }
 
-        private void FormLowpass_Load(object sender, EventArgs e)
+        private void FormHighpass_Load(object sender, EventArgs e)
         {
             pictureBox1.Image = pcxGray.pcxImg;
             pcxAfter = new ImgPcx(pcxGray);
-            pcxAfter.Lowpass();
+            pcxAfter.Highpass();
             pictureBox2.Image = pcxAfter.pcxImg;
         }
     }

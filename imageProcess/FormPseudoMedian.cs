@@ -16,19 +16,8 @@ namespace imageProcess
         private void FormPseudoMedian_Load(object sender, EventArgs e)
         {
             pictureBox1.Image = pcxGray.pcxImg;
-        }
-
-        private void button1_Click(object sender, EventArgs e)
-        {
             pcxAfter = new ImgPcx(pcxGray);
-            pcxAfter.PseudoMedian("MaxMin");
-            pictureBox2.Image = pcxAfter.pcxImg;
-        }
-
-        private void button2_Click(object sender, EventArgs e)
-        {
-            pcxAfter = new ImgPcx(pcxGray);
-            pcxAfter.PseudoMedian("MinMax");
+            pcxAfter.PseudoMedian();
             pictureBox2.Image = pcxAfter.pcxImg;
         }
     }

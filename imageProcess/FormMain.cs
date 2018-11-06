@@ -444,5 +444,41 @@ namespace imageProcess
             f.ShowDialog(this);                             // 設定FormPseudoMedian為FormMain的上層，並開啟FormPseudoMedian視窗
                                                             // 由於在FormMain的程式碼內使用this，所以this為FormMain物件本身
         }
+
+        // 開啟Lowpass Filter功能視窗
+        private void menuLowpass_Click(object sender, EventArgs e)
+        {
+            FormLowpass f = new FormLowpass();  // 建立FormLowpass物件
+            f.pcxGray = pcxGray;                // 傳送灰階圖像
+            f.ShowDialog(this);                 // 設定FormLowpass為FormMain的上層，並開啟FormLowpass視窗
+                                                // 由於在FormMain的程式碼內使用this，所以this為FormMain物件本身
+        }
+
+        // 開啟Highpass Filter功能視窗
+        private void menuHighpass_Click(object sender, EventArgs e)
+        {
+            FormHighpass f = new FormHighpass();    // 建立FormHighpass物件
+            f.pcxGray = pcxGray;                    // 傳送灰階圖像
+            f.ShowDialog(this);                     // 設定FormHighpass為FormMain的上層，並開啟FormHighpass視窗
+                                                    // 由於在FormMain的程式碼內使用this，所以this為FormMain物件本身
+        }
+
+        // 開啟Highpass Filter功能視窗
+        private void menuHighBoost_Click(object sender, EventArgs e)
+        {
+            FormHighBoost f = new FormHighBoost();  // 建立FormHighBoost物件
+            f.pcxGray = pcxGray;                    // 傳送灰階圖像
+            f.ShowDialog(this);                     // 設定FormHighBoost為FormMain的上層，並開啟FormHighBoost視窗
+                                                    // 由於在FormMain的程式碼內使用this，所以this為FormMain物件本身
+        }
+
+        // 開啟Edge Crispening功能視窗
+        private void menuEdge_Click(object sender, EventArgs e)
+        {
+            FormEdge f = new FormEdge();    // 建立FormEdge物件
+            f.pcxGray = pcxGray;            // 傳送灰階圖像
+            f.ShowDialog(this);             // 設定FormEdge為FormMain的上層，並開啟FormEdge視窗
+                                            // 由於在FormMain的程式碼內使用this，所以this為FormMain物件本身
+        }
     }
 }

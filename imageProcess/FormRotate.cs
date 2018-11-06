@@ -17,16 +17,34 @@ namespace imageProcess
         {
             // 顯示FormMain傳來ImgPcx物件的圖片 (原始圖片)
             pictureBox1.Image = pcxOrigin.pcxImg;
+            radioButton1.Checked = true;
+        }
+
+        // 旋轉角度拉條
+        private void trackBar1_ValueChanged(object sender, EventArgs e)
+        {
+            int value = trackBar1.Value;
+            textBox1.Text = value.ToString();
+            if (radioButton1.Checked == true)
+            {
+                pcxAfter = new ImgPcx(pcxOrigin);
+                // double.Parse() : 字串轉為double
+                pcxAfter.RotateForward(value);
+                pictureBox1.Image = pcxAfter.pcxImg;
+            }
+            else if (radioButton2.Checked == true)
+            {
+                pcxAfter = new ImgPcx(pcxOrigin);
+                // double.Parse() : 字串轉為double
+                pcxAfter.RotateBackward(value);
+                pictureBox1.Image = pcxAfter.pcxImg;
+            }
         }
 
         // 正旋轉
-        private void button1_Click(object sender, EventArgs e)
+        private void radioButton1_CheckedChanged(object sender, EventArgs e)
         {
-            if(textBox1.Text == "")
-            {
-                MessageBox.Show("請輸入旋轉角度");
-            }
-            else
+            if(radioButton1.Checked == true)
             {
                 pcxAfter = new ImgPcx(pcxOrigin);
                 // double.Parse() : 字串轉為double
@@ -36,11 +54,14 @@ namespace imageProcess
         }
 
         // 反旋轉
-        private void button2_Click(object sender, EventArgs e)
+        private void radioButton2_CheckedChanged(object sender, EventArgs e)
         {
-            if (textBox1.Text == "")
+            if (radioButton2.Checked == true)
             {
-                MessageBox.Show("請輸入旋轉角度");
+                pcxAfter = new ImgPcx(pcxOrigin);
+                // double.Parse() : 字串轉為double
+                pcxAfter.RotateBackward(double.Parse(textBox1.Text));
+                pictureBox1.Image = pcxAfter.pcxImg;
             }
         }
     }

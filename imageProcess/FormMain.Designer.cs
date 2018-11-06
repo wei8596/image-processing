@@ -43,6 +43,7 @@
             this.menuFile = new System.Windows.Forms.ToolStripMenuItem();
             this.menuOpen = new System.Windows.Forms.ToolStripMenuItem();
             this.menuSave = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuClose = new System.Windows.Forms.ToolStripMenuItem();
             this.menuTool = new System.Windows.Forms.ToolStripMenuItem();
             this.menuGray = new System.Windows.Forms.ToolStripMenuItem();
             this.menuInvert = new System.Windows.Forms.ToolStripMenuItem();
@@ -58,15 +59,17 @@
             this.menuHistSpec = new System.Windows.Forms.ToolStripMenuItem();
             this.menuFilter = new System.Windows.Forms.ToolStripMenuItem();
             this.menuOutlier = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuMedian = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuPseudoMedian = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuLowpass = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
             this.labelB = new System.Windows.Forms.Label();
             this.labelG = new System.Windows.Forms.Label();
             this.labelR = new System.Windows.Forms.Label();
             this.labelDim = new System.Windows.Forms.Label();
-            this.menuMedian = new System.Windows.Forms.ToolStripMenuItem();
-            this.menuClose = new System.Windows.Forms.ToolStripMenuItem();
-            this.menuPseudoMedian = new System.Windows.Forms.ToolStripMenuItem();
-            this.menuLowpass = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuHighpass = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuHighBoost = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuEdge = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).BeginInit();
@@ -174,6 +177,7 @@
             // 
             // menuStrip1
             // 
+            this.menuStrip1.BackColor = System.Drawing.Color.Transparent;
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.menuFile,
             this.menuTool,
@@ -213,6 +217,14 @@
             this.menuSave.Size = new System.Drawing.Size(185, 22);
             this.menuSave.Text = "另存圖檔(A)";
             this.menuSave.Click += new System.EventHandler(this.menuSave_Click);
+            // 
+            // menuClose
+            // 
+            this.menuClose.Name = "menuClose";
+            this.menuClose.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.X)));
+            this.menuClose.Size = new System.Drawing.Size(185, 22);
+            this.menuClose.Text = "結束(X)";
+            this.menuClose.Click += new System.EventHandler(this.menuClose_Click);
             // 
             // menuTool
             // 
@@ -325,7 +337,10 @@
             this.menuOutlier,
             this.menuMedian,
             this.menuPseudoMedian,
-            this.menuLowpass});
+            this.menuLowpass,
+            this.menuHighpass,
+            this.menuHighBoost,
+            this.menuEdge});
             this.menuFilter.Name = "menuFilter";
             this.menuFilter.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.I)));
             this.menuFilter.ShowShortcutKeys = false;
@@ -338,6 +353,27 @@
             this.menuOutlier.Size = new System.Drawing.Size(193, 22);
             this.menuOutlier.Text = "Outlier Filter";
             this.menuOutlier.Click += new System.EventHandler(this.menuOutlier_Click);
+            // 
+            // menuMedian
+            // 
+            this.menuMedian.Name = "menuMedian";
+            this.menuMedian.Size = new System.Drawing.Size(193, 22);
+            this.menuMedian.Text = "Median Filter";
+            this.menuMedian.Click += new System.EventHandler(this.menuMedian_Click);
+            // 
+            // menuPseudoMedian
+            // 
+            this.menuPseudoMedian.Name = "menuPseudoMedian";
+            this.menuPseudoMedian.Size = new System.Drawing.Size(193, 22);
+            this.menuPseudoMedian.Text = "Pseudo Median Filter";
+            this.menuPseudoMedian.Click += new System.EventHandler(this.menuPseudoMedian_Click);
+            // 
+            // menuLowpass
+            // 
+            this.menuLowpass.Name = "menuLowpass";
+            this.menuLowpass.Size = new System.Drawing.Size(193, 22);
+            this.menuLowpass.Text = "Lowpass Filter";
+            this.menuLowpass.Click += new System.EventHandler(this.menuLowpass_Click);
             // 
             // groupBox5
             // 
@@ -384,33 +420,26 @@
             this.labelDim.Size = new System.Drawing.Size(0, 16);
             this.labelDim.TabIndex = 1;
             // 
-            // menuMedian
+            // menuHighpass
             // 
-            this.menuMedian.Name = "menuMedian";
-            this.menuMedian.Size = new System.Drawing.Size(193, 22);
-            this.menuMedian.Text = "Median Filter";
-            this.menuMedian.Click += new System.EventHandler(this.menuMedian_Click);
+            this.menuHighpass.Name = "menuHighpass";
+            this.menuHighpass.Size = new System.Drawing.Size(193, 22);
+            this.menuHighpass.Text = "Highpass Filter";
+            this.menuHighpass.Click += new System.EventHandler(this.menuHighpass_Click);
             // 
-            // menuClose
+            // menuHighBoost
             // 
-            this.menuClose.Name = "menuClose";
-            this.menuClose.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.X)));
-            this.menuClose.Size = new System.Drawing.Size(185, 22);
-            this.menuClose.Text = "結束(X)";
-            this.menuClose.Click += new System.EventHandler(this.menuClose_Click);
+            this.menuHighBoost.Name = "menuHighBoost";
+            this.menuHighBoost.Size = new System.Drawing.Size(193, 22);
+            this.menuHighBoost.Text = "High-Boost Filter";
+            this.menuHighBoost.Click += new System.EventHandler(this.menuHighBoost_Click);
             // 
-            // menuPseudoMedian
+            // menuEdge
             // 
-            this.menuPseudoMedian.Name = "menuPseudoMedian";
-            this.menuPseudoMedian.Size = new System.Drawing.Size(193, 22);
-            this.menuPseudoMedian.Text = "Pseudo Median Filter";
-            this.menuPseudoMedian.Click += new System.EventHandler(this.menuPseudoMedian_Click);
-            // 
-            // menuLowpass
-            // 
-            this.menuLowpass.Name = "menuLowpass";
-            this.menuLowpass.Size = new System.Drawing.Size(193, 22);
-            this.menuLowpass.Text = "Lowpass Filter";
+            this.menuEdge.Name = "menuEdge";
+            this.menuEdge.Size = new System.Drawing.Size(193, 22);
+            this.menuEdge.Text = "Edge Crispening";
+            this.menuEdge.Click += new System.EventHandler(this.menuEdge_Click);
             // 
             // FormMain
             // 
@@ -485,6 +514,9 @@
         private System.Windows.Forms.ToolStripMenuItem menuClose;
         private System.Windows.Forms.ToolStripMenuItem menuPseudoMedian;
         private System.Windows.Forms.ToolStripMenuItem menuLowpass;
+        private System.Windows.Forms.ToolStripMenuItem menuHighpass;
+        private System.Windows.Forms.ToolStripMenuItem menuHighBoost;
+        private System.Windows.Forms.ToolStripMenuItem menuEdge;
     }
 }
 

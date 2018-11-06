@@ -59,11 +59,29 @@
     <Compile Include="FormContrastStretch.Designer.cs">
       <DependentUpon>FormContrastStretch.cs</DependentUpon>
     </Compile>
+    <Compile Include="FormEdge.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormEdge.Designer.cs">
+      <DependentUpon>FormEdge.cs</DependentUpon>
+    </Compile>
     <Compile Include="FormGray.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="FormGray.Designer.cs">
       <DependentUpon>FormGray.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormHighBoost.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormHighBoost.Designer.cs">
+      <DependentUpon>FormHighBoost.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormHighpass.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormHighpass.Designer.cs">
+      <DependentUpon>FormHighpass.cs</DependentUpon>
     </Compile>
     <Compile Include="FormHistEqual.cs">
       <SubType>Form</SubType>
@@ -164,8 +182,17 @@
     <EmbeddedResource Include="FormContrastStretch.resx">
       <DependentUpon>FormContrastStretch.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="FormEdge.resx">
+      <DependentUpon>FormEdge.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="FormGray.resx">
       <DependentUpon>FormGray.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormHighBoost.resx">
+      <DependentUpon>FormHighBoost.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormHighpass.resx">
+      <DependentUpon>FormHighpass.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FormHistEqual.resx">
       <DependentUpon>FormHistEqual.cs</DependentUpon>

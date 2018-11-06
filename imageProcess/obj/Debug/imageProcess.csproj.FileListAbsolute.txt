@@ -24,3 +24,7 @@ D:\image_processing\course\imageProcess\imageProcess\obj\Debug\imageProcess.Form
 D:\image_processing\course\imageProcess\imageProcess\obj\Debug\imageProcess.FormOutlier.resources
 D:\image_processing\course\imageProcess\imageProcess\obj\Debug\imageProcess.FormMedian.resources
 D:\image_processing\course\imageProcess\imageProcess\obj\Debug\imageProcess.FormPseudoMedian.resources
+D:\image_processing\course\imageProcess\imageProcess\obj\Debug\imageProcess.FormLowpass.resources
+D:\image_processing\course\imageProcess\imageProcess\obj\Debug\imageProcess.FormHighpass.resources
+D:\image_processing\course\imageProcess\imageProcess\obj\Debug\imageProcess.FormHighBoost.resources
+D:\image_processing\course\imageProcess\imageProcess\obj\Debug\imageProcess.FormEdge.resources

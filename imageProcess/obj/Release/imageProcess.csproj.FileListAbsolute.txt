@@ -18,3 +18,12 @@ D:\image_processing\course\imageProcess\imageProcess\obj\Release\imageProcess.cs
 D:\image_processing\course\imageProcess\imageProcess\obj\Release\imageProcess.csproj.CoreCompileInputs.cache
 D:\image_processing\course\imageProcess\imageProcess\obj\Release\imageProcess.exe
 D:\image_processing\course\imageProcess\imageProcess\obj\Release\imageProcess.pdb
+D:\image_processing\course\imageProcess\imageProcess\obj\Release\imageProcess.FormContrastStretch.resources
+D:\image_processing\course\imageProcess\imageProcess\obj\Release\imageProcess.FormEdge.resources
+D:\image_processing\course\imageProcess\imageProcess\obj\Release\imageProcess.FormHighBoost.resources
+D:\image_processing\course\imageProcess\imageProcess\obj\Release\imageProcess.FormHighpass.resources
+D:\image_processing\course\imageProcess\imageProcess\obj\Release\imageProcess.FormHistSpec.resources
+D:\image_processing\course\imageProcess\imageProcess\obj\Release\imageProcess.FormLowpass.resources
+D:\image_processing\course\imageProcess\imageProcess\obj\Release\imageProcess.FormMedian.resources
+D:\image_processing\course\imageProcess\imageProcess\obj\Release\imageProcess.FormOutlier.resources
+D:\image_processing\course\imageProcess\imageProcess\obj\Release\imageProcess.FormPseudoMedian.resources

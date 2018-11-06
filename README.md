@@ -21,4 +21,6 @@
 - Histogram Equalization
 
 ## Filters
-- Outlier
+- Outlier Filter
+- Median Filter
+- Pseudo Median Filter

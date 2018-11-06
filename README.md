@@ -24,3 +24,7 @@
 - Outlier Filter
 - Median Filter
 - Pseudo Median Filter
+- Lowpass Filter
+- Highpass Filter
+- High-Boost Filter
+- Edge Crispening

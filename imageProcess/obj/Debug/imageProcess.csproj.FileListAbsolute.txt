@@ -14,8 +14,6 @@ D:\image_processing\course\imageProcess\imageProcess\obj\Debug\imageProcess.Form
 D:\image_processing\course\imageProcess\imageProcess\obj\Debug\imageProcess.FormRGB.resources
 D:\image_processing\course\imageProcess\imageProcess\obj\Debug\imageProcess.FormThreshold.resources
 D:\image_processing\course\imageProcess\imageProcess\obj\Debug\imageProcess.FormGray.resources
-D:\image_processing\course\imageProcess\imageProcess\obj\Debug\imageProcess.FormInvert.resources
-D:\image_processing\course\imageProcess\imageProcess\obj\Debug\imageProcess.FormZoom.resources
 D:\image_processing\course\imageProcess\imageProcess\obj\Debug\imageProcess.FormTransparency.resources
 D:\image_processing\course\imageProcess\imageProcess\obj\Debug\imageProcess.FormBitPlane.resources
 D:\image_processing\course\imageProcess\imageProcess\obj\Debug\imageProcess.FormHistEqual.resources
@@ -28,3 +26,5 @@ D:\image_processing\course\imageProcess\imageProcess\obj\Debug\imageProcess.Form
 D:\image_processing\course\imageProcess\imageProcess\obj\Debug\imageProcess.FormHighpass.resources
 D:\image_processing\course\imageProcess\imageProcess\obj\Debug\imageProcess.FormHighBoost.resources
 D:\image_processing\course\imageProcess\imageProcess\obj\Debug\imageProcess.FormEdge.resources
+D:\image_processing\course\imageProcess\imageProcess\obj\Debug\imageProcess.FormNegative.resources
+D:\image_processing\course\imageProcess\imageProcess\obj\Debug\imageProcess.FormScaling.resources

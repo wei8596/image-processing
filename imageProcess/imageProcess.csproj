@@ -95,11 +95,11 @@
     <Compile Include="FormHistSpec.Designer.cs">
       <DependentUpon>FormHistSpec.cs</DependentUpon>
     </Compile>
-    <Compile Include="FormInvert.cs">
+    <Compile Include="FormNegative.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FormInvert.Designer.cs">
-      <DependentUpon>FormInvert.cs</DependentUpon>
+    <Compile Include="FormNegative.Designer.cs">
+      <DependentUpon>FormNegative.cs</DependentUpon>
     </Compile>
     <Compile Include="FormLowpass.cs">
       <SubType>Form</SubType>
@@ -161,11 +161,11 @@
     <Compile Include="FormTransparency.Designer.cs">
       <DependentUpon>FormTransparency.cs</DependentUpon>
     </Compile>
-    <Compile Include="FormZoom.cs">
+    <Compile Include="FormScaling.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FormZoom.Designer.cs">
-      <DependentUpon>FormZoom.cs</DependentUpon>
+    <Compile Include="FormScaling.Designer.cs">
+      <DependentUpon>FormScaling.cs</DependentUpon>
     </Compile>
     <Compile Include="ImgPcx.cs" />
     <Compile Include="Program.cs" />
@@ -200,8 +200,8 @@
     <EmbeddedResource Include="FormHistSpec.resx">
       <DependentUpon>FormHistSpec.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="FormInvert.resx">
-      <DependentUpon>FormInvert.cs</DependentUpon>
+    <EmbeddedResource Include="FormNegative.resx">
+      <DependentUpon>FormNegative.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FormLowpass.resx">
       <DependentUpon>FormLowpass.cs</DependentUpon>
@@ -233,8 +233,8 @@
     <EmbeddedResource Include="FormTransparency.resx">
       <DependentUpon>FormTransparency.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="FormZoom.resx">
-      <DependentUpon>FormZoom.cs</DependentUpon>
+    <EmbeddedResource Include="FormScaling.resx">
+      <DependentUpon>FormScaling.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

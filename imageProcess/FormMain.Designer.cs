@@ -46,12 +46,12 @@
             this.menuClose = new System.Windows.Forms.ToolStripMenuItem();
             this.menuTool = new System.Windows.Forms.ToolStripMenuItem();
             this.menuGray = new System.Windows.Forms.ToolStripMenuItem();
-            this.menuInvert = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuNegative = new System.Windows.Forms.ToolStripMenuItem();
             this.menuMirror = new System.Windows.Forms.ToolStripMenuItem();
             this.menuRotate = new System.Windows.Forms.ToolStripMenuItem();
             this.menuRGB = new System.Windows.Forms.ToolStripMenuItem();
             this.menuThreshold = new System.Windows.Forms.ToolStripMenuItem();
-            this.menuZoom = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuScaling = new System.Windows.Forms.ToolStripMenuItem();
             this.menuTransparency = new System.Windows.Forms.ToolStripMenuItem();
             this.menuBitPlane = new System.Windows.Forms.ToolStripMenuItem();
             this.menuContrastStretch = new System.Windows.Forms.ToolStripMenuItem();
@@ -62,14 +62,15 @@
             this.menuMedian = new System.Windows.Forms.ToolStripMenuItem();
             this.menuPseudoMedian = new System.Windows.Forms.ToolStripMenuItem();
             this.menuLowpass = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuHighpass = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuHighBoost = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuEdge = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
             this.labelB = new System.Windows.Forms.Label();
             this.labelG = new System.Windows.Forms.Label();
             this.labelR = new System.Windows.Forms.Label();
             this.labelDim = new System.Windows.Forms.Label();
-            this.menuHighpass = new System.Windows.Forms.ToolStripMenuItem();
-            this.menuHighBoost = new System.Windows.Forms.ToolStripMenuItem();
-            this.menuEdge = new System.Windows.Forms.ToolStripMenuItem();
+            this.pictureBox2 = new System.Windows.Forms.PictureBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).BeginInit();
@@ -79,6 +80,7 @@
             this.groupBox4.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.groupBox5.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             this.SuspendLayout();
             // 
             // pictureBox1
@@ -94,14 +96,14 @@
             // groupBox2
             // 
             this.groupBox2.Controls.Add(this.textBoxInfo);
-            this.groupBox2.Location = new System.Drawing.Point(389, 52);
+            this.groupBox2.Location = new System.Drawing.Point(503, 52);
             this.groupBox2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Padding = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.groupBox2.Size = new System.Drawing.Size(465, 350);
+            this.groupBox2.Size = new System.Drawing.Size(351, 350);
             this.groupBox2.TabIndex = 5;
             this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "資訊";
+            this.groupBox2.Text = "Information";
             // 
             // textBoxInfo
             // 
@@ -111,19 +113,19 @@
             this.textBoxInfo.Cursor = System.Windows.Forms.Cursors.Default;
             this.textBoxInfo.Enabled = false;
             this.textBoxInfo.Font = new System.Drawing.Font("微軟正黑體", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
-            this.textBoxInfo.Location = new System.Drawing.Point(6, 20);
+            this.textBoxInfo.Location = new System.Drawing.Point(21, 20);
             this.textBoxInfo.Multiline = true;
             this.textBoxInfo.Name = "textBoxInfo";
             this.textBoxInfo.ReadOnly = true;
-            this.textBoxInfo.Size = new System.Drawing.Size(453, 320);
+            this.textBoxInfo.Size = new System.Drawing.Size(324, 320);
             this.textBoxInfo.TabIndex = 2;
             this.textBoxInfo.TabStop = false;
             // 
             // pictureBox3
             // 
-            this.pictureBox3.Location = new System.Drawing.Point(6, 22);
+            this.pictureBox3.Location = new System.Drawing.Point(61, 60);
             this.pictureBox3.Name = "pictureBox3";
-            this.pictureBox3.Size = new System.Drawing.Size(448, 112);
+            this.pictureBox3.Size = new System.Drawing.Size(240, 240);
             this.pictureBox3.TabIndex = 1;
             this.pictureBox3.TabStop = false;
             // 
@@ -132,10 +134,10 @@
             this.groupBox3.Controls.Add(this.chart1);
             this.groupBox3.Location = new System.Drawing.Point(12, 456);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(350, 350);
+            this.groupBox3.Size = new System.Drawing.Size(485, 350);
             this.groupBox3.TabIndex = 6;
             this.groupBox3.TabStop = false;
-            this.groupBox3.Text = "直方圖";
+            this.groupBox3.Text = "Histogram";
             // 
             // chart1
             // 
@@ -143,7 +145,7 @@
             this.chart1.ChartAreas.Add(chartArea1);
             this.chart1.Location = new System.Drawing.Point(10, 23);
             this.chart1.Name = "chart1";
-            this.chart1.Size = new System.Drawing.Size(300, 250);
+            this.chart1.Size = new System.Drawing.Size(469, 321);
             this.chart1.TabIndex = 1;
             this.chart1.Visible = false;
             // 
@@ -160,20 +162,20 @@
             this.groupBox1.Controls.Add(this.pictureBox1);
             this.groupBox1.Location = new System.Drawing.Point(12, 51);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(350, 350);
+            this.groupBox1.Size = new System.Drawing.Size(485, 350);
             this.groupBox1.TabIndex = 7;
             this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "原始圖像";
+            this.groupBox1.Text = "Original Image";
             // 
             // groupBox4
             // 
             this.groupBox4.Controls.Add(this.pictureBox3);
-            this.groupBox4.Location = new System.Drawing.Point(389, 456);
+            this.groupBox4.Location = new System.Drawing.Point(503, 456);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(465, 350);
+            this.groupBox4.Size = new System.Drawing.Size(351, 350);
             this.groupBox4.TabIndex = 8;
             this.groupBox4.TabStop = false;
-            this.groupBox4.Text = "調色盤";
+            this.groupBox4.Text = "Palette";
             // 
             // menuStrip1
             // 
@@ -198,44 +200,44 @@
             this.menuFile.ShortcutKeyDisplayString = "";
             this.menuFile.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F)));
             this.menuFile.ShowShortcutKeys = false;
-            this.menuFile.Size = new System.Drawing.Size(57, 20);
-            this.menuFile.Text = "檔案(F)";
+            this.menuFile.Size = new System.Drawing.Size(38, 20);
+            this.menuFile.Text = "&File";
             // 
             // menuOpen
             // 
             this.menuOpen.Name = "menuOpen";
             this.menuOpen.ShortcutKeyDisplayString = "";
             this.menuOpen.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-            this.menuOpen.Size = new System.Drawing.Size(185, 22);
-            this.menuOpen.Text = "開啟圖檔(O)";
+            this.menuOpen.Size = new System.Drawing.Size(180, 22);
+            this.menuOpen.Text = "&Open";
             this.menuOpen.Click += new System.EventHandler(this.menuOpen_Click);
             // 
             // menuSave
             // 
             this.menuSave.Name = "menuSave";
             this.menuSave.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.A)));
-            this.menuSave.Size = new System.Drawing.Size(185, 22);
-            this.menuSave.Text = "另存圖檔(A)";
+            this.menuSave.Size = new System.Drawing.Size(180, 22);
+            this.menuSave.Text = "Save &As";
             this.menuSave.Click += new System.EventHandler(this.menuSave_Click);
             // 
             // menuClose
             // 
             this.menuClose.Name = "menuClose";
             this.menuClose.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.X)));
-            this.menuClose.Size = new System.Drawing.Size(185, 22);
-            this.menuClose.Text = "結束(X)";
+            this.menuClose.Size = new System.Drawing.Size(180, 22);
+            this.menuClose.Text = "E&xit";
             this.menuClose.Click += new System.EventHandler(this.menuClose_Click);
             // 
             // menuTool
             // 
             this.menuTool.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.menuGray,
-            this.menuInvert,
+            this.menuNegative,
             this.menuMirror,
             this.menuRotate,
             this.menuRGB,
             this.menuThreshold,
-            this.menuZoom,
+            this.menuScaling,
             this.menuTransparency,
             this.menuBitPlane,
             this.menuContrastStretch,
@@ -244,8 +246,8 @@
             this.menuTool.Name = "menuTool";
             this.menuTool.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.T)));
             this.menuTool.ShowShortcutKeys = false;
-            this.menuTool.Size = new System.Drawing.Size(58, 20);
-            this.menuTool.Text = "工具(T)";
+            this.menuTool.Size = new System.Drawing.Size(50, 20);
+            this.menuTool.Text = "&Tools";
             // 
             // menuGray
             // 
@@ -254,12 +256,12 @@
             this.menuGray.Text = "Gray Level";
             this.menuGray.Click += new System.EventHandler(this.menuGray_Click);
             // 
-            // menuInvert
+            // menuNegative
             // 
-            this.menuInvert.Name = "menuInvert";
-            this.menuInvert.Size = new System.Drawing.Size(209, 22);
-            this.menuInvert.Text = "Negative";
-            this.menuInvert.Click += new System.EventHandler(this.menuInvert_Click);
+            this.menuNegative.Name = "menuNegative";
+            this.menuNegative.Size = new System.Drawing.Size(209, 22);
+            this.menuNegative.Text = "Negative";
+            this.menuNegative.Click += new System.EventHandler(this.menuNegative_Click);
             // 
             // menuMirror
             // 
@@ -289,12 +291,12 @@
             this.menuThreshold.Text = "Thresholding";
             this.menuThreshold.Click += new System.EventHandler(this.menuThreshold_Click);
             // 
-            // menuZoom
+            // menuScaling
             // 
-            this.menuZoom.Name = "menuZoom";
-            this.menuZoom.Size = new System.Drawing.Size(209, 22);
-            this.menuZoom.Text = "Scaling";
-            this.menuZoom.Click += new System.EventHandler(this.menuZoom_Click);
+            this.menuScaling.Name = "menuScaling";
+            this.menuScaling.Size = new System.Drawing.Size(209, 22);
+            this.menuScaling.Text = "Scaling";
+            this.menuScaling.Click += new System.EventHandler(this.menuScaling_Click);
             // 
             // menuTransparency
             // 
@@ -344,8 +346,8 @@
             this.menuFilter.Name = "menuFilter";
             this.menuFilter.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.I)));
             this.menuFilter.ShowShortcutKeys = false;
-            this.menuFilter.Size = new System.Drawing.Size(66, 20);
-            this.menuFilter.Text = "濾波器(I)";
+            this.menuFilter.Size = new System.Drawing.Size(51, 20);
+            this.menuFilter.Text = "F&ilters";
             // 
             // menuOutlier
             // 
@@ -375,8 +377,30 @@
             this.menuLowpass.Text = "Lowpass Filter";
             this.menuLowpass.Click += new System.EventHandler(this.menuLowpass_Click);
             // 
+            // menuHighpass
+            // 
+            this.menuHighpass.Name = "menuHighpass";
+            this.menuHighpass.Size = new System.Drawing.Size(193, 22);
+            this.menuHighpass.Text = "Highpass Filter";
+            this.menuHighpass.Click += new System.EventHandler(this.menuHighpass_Click);
+            // 
+            // menuHighBoost
+            // 
+            this.menuHighBoost.Name = "menuHighBoost";
+            this.menuHighBoost.Size = new System.Drawing.Size(193, 22);
+            this.menuHighBoost.Text = "High-Boost Filter";
+            this.menuHighBoost.Click += new System.EventHandler(this.menuHighBoost_Click);
+            // 
+            // menuEdge
+            // 
+            this.menuEdge.Name = "menuEdge";
+            this.menuEdge.Size = new System.Drawing.Size(193, 22);
+            this.menuEdge.Text = "Edge Crispening";
+            this.menuEdge.Click += new System.EventHandler(this.menuEdge_Click);
+            // 
             // groupBox5
             // 
+            this.groupBox5.Controls.Add(this.pictureBox2);
             this.groupBox5.Controls.Add(this.labelB);
             this.groupBox5.Controls.Add(this.labelG);
             this.groupBox5.Controls.Add(this.labelR);
@@ -420,26 +444,13 @@
             this.labelDim.Size = new System.Drawing.Size(0, 16);
             this.labelDim.TabIndex = 1;
             // 
-            // menuHighpass
+            // pictureBox2
             // 
-            this.menuHighpass.Name = "menuHighpass";
-            this.menuHighpass.Size = new System.Drawing.Size(193, 22);
-            this.menuHighpass.Text = "Highpass Filter";
-            this.menuHighpass.Click += new System.EventHandler(this.menuHighpass_Click);
-            // 
-            // menuHighBoost
-            // 
-            this.menuHighBoost.Name = "menuHighBoost";
-            this.menuHighBoost.Size = new System.Drawing.Size(193, 22);
-            this.menuHighBoost.Text = "High-Boost Filter";
-            this.menuHighBoost.Click += new System.EventHandler(this.menuHighBoost_Click);
-            // 
-            // menuEdge
-            // 
-            this.menuEdge.Name = "menuEdge";
-            this.menuEdge.Size = new System.Drawing.Size(193, 22);
-            this.menuEdge.Text = "Edge Crispening";
-            this.menuEdge.Click += new System.EventHandler(this.menuEdge_Click);
+            this.pictureBox2.Location = new System.Drawing.Point(289, 19);
+            this.pictureBox2.Name = "pictureBox2";
+            this.pictureBox2.Size = new System.Drawing.Size(15, 15);
+            this.pictureBox2.TabIndex = 2;
+            this.pictureBox2.TabStop = false;
             // 
             // FormMain
             // 
@@ -471,6 +482,7 @@
             this.menuStrip1.PerformLayout();
             this.groupBox5.ResumeLayout(false);
             this.groupBox5.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -489,7 +501,7 @@
         private System.Windows.Forms.ToolStripMenuItem menuOpen;
         private System.Windows.Forms.ToolStripMenuItem menuSave;
         private System.Windows.Forms.ToolStripMenuItem menuTool;
-        private System.Windows.Forms.ToolStripMenuItem menuInvert;
+        private System.Windows.Forms.ToolStripMenuItem menuNegative;
         private System.Windows.Forms.ToolStripMenuItem menuGray;
         private System.Windows.Forms.PictureBox pictureBox3;
         private System.Windows.Forms.GroupBox groupBox5;
@@ -502,7 +514,7 @@
         private System.Windows.Forms.ToolStripMenuItem menuRGB;
         private System.Windows.Forms.ToolStripMenuItem menuThreshold;
         private System.Windows.Forms.TextBox textBoxInfo;
-        private System.Windows.Forms.ToolStripMenuItem menuZoom;
+        private System.Windows.Forms.ToolStripMenuItem menuScaling;
         private System.Windows.Forms.ToolStripMenuItem menuTransparency;
         private System.Windows.Forms.ToolStripMenuItem menuBitPlane;
         private System.Windows.Forms.ToolStripMenuItem menuHistEqual;
@@ -517,6 +529,7 @@
         private System.Windows.Forms.ToolStripMenuItem menuHighpass;
         private System.Windows.Forms.ToolStripMenuItem menuHighBoost;
         private System.Windows.Forms.ToolStripMenuItem menuEdge;
+        private System.Windows.Forms.PictureBox pictureBox2;
     }
 }
 

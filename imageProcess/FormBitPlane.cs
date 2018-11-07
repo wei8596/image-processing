@@ -58,10 +58,14 @@ namespace imageProcess
             openFileDialog.Filter = "pcx files (*.pcx)|*.pcx";
             if (openFileDialog.ShowDialog() == DialogResult.OK && openFileDialog.FileName.Length > 0)
             {
+                // 顯示原圖
+                pictureBox10.Image = pcxGray.pcxImg;
+                label1.Text = "WaterMark Inserted";
+                label2.Text = "Original Image";
                 pcxMark = new ImgPcx(openFileDialog.FileName);
                 // 浮水印轉灰階
                 pcxMark.Gray();
-                pcxGray.Watermark(pcxMark.pcxImg);
+                pcxGray.Watermark(pcxMark);
                 pictureBox9.Image = pcxGray.pcxImg;
                 pictureBox1.Image = null;
                 pictureBox2.Image = null;
@@ -74,6 +78,7 @@ namespace imageProcess
             }
             else
             {
+                pictureBox9.Image = pcxGray.pcxImg;
                 pictureBox1.Image = null;
                 pictureBox2.Image = null;
                 pictureBox3.Image = null;
@@ -82,7 +87,9 @@ namespace imageProcess
                 pictureBox6.Image = null;
                 pictureBox7.Image = null;
                 pictureBox8.Image = null;
-                pictureBox9.Image = null;
+                pictureBox10.Image = null;
+                label1.Text = "";
+                label2.Text = "";
             }
         }
     }

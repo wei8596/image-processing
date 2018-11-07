@@ -57,6 +57,7 @@ namespace imageProcess
             {
                 // 清空顯示圖片與資訊
                 pictureBox1.Image = null;
+                pictureBox2.Image = null;
                 pictureBox3.Image = null;
                 textBoxInfo.Text = "";
                 labelXY.Text = "";
@@ -86,9 +87,9 @@ namespace imageProcess
                         // 畫出調色盤
                         var colors = pcxOrigin.pcxImg.Palette.Entries;      // 取得調色盤
                         int cntColors = colors.Count();                     // 計算顏色總數 (ex: 256)
-                        int row = cntColors / 8;                            // (ex: 256 / 8 = 32)
-                        int column = cntColors / 32;                        // (ex: 256 / 32 = 8)
-                        Bitmap palette = new Bitmap(row * 14, column * 14); // 建立調色盤圖像
+                        int row = cntColors / 16;                           // (ex: 256 / 16 = 16)
+                        int column = cntColors / 16;                        // (ex: 256 / 16 = 16)
+                        Bitmap palette = new Bitmap(row * 15, column * 15); // 建立調色盤圖像
                         Graphics g = Graphics.FromImage(palette);           // 繪圖介面
 
                         /*
@@ -102,17 +103,17 @@ namespace imageProcess
                             // 挑出顏色給筆刷
                             SolidBrush brush = new SolidBrush(Color.FromArgb(colors[i].A, colors[i].R, colors[i].G, colors[i].B));
                             // 畫矩形
-                            g.FillRectangle(brush, curX, curY, 14, 14);
+                            g.FillRectangle(brush, curX, curY, 15, 15);
                             ++cnt;
                             if (cnt == row) // 換行繼續畫
                             {
                                 curX = 0;
-                                curY += 14;
+                                curY += 15;
                                 cnt = 0;
                             }
                             else           // 右移繼續畫
                             {
-                                curX += 14;
+                                curX += 15;
                             }
                         }
                         // 顯示調色盤
@@ -270,25 +271,6 @@ namespace imageProcess
             return base.ProcessCmdKey(ref msg, keyData);
         }
 
-        // 開啟負片功能視窗
-        private void menuInvert_Click(object sender, EventArgs e)
-        {
-            FormInvert f = new FormInvert();    // 建立FormInvert物件
-            f.pcxOrigin = pcxOrigin;            // 傳送ImgPcx物件
-            f.pcxGray = pcxGray;
-            f.ShowDialog(this);                 // 設定FormInvert為FormMain的上層，並開啟FormInvert視窗
-                                                // 由於在FormMain的程式碼內使用this，所以this為FormMain物件本身
-        }
-
-        // 開啟灰階功能視窗
-        private void menuGray_Click(object sender, EventArgs e)
-        {
-            FormGray f = new FormGray();    // 建立FormGray物件
-            f.pcxOrigin = pcxOrigin;        // 傳送ImgPcx物件
-            f.ShowDialog(this);             // 設定FormGray為FormMain的上層，並開啟FormGray視窗
-                                            // 由於在FormMain的程式碼內使用this，所以this為FormMain物件本身
-        }
-
         // 取得滑鼠座標
         private void pictureBox1_MouseMove(object sender, MouseEventArgs e)
         {
@@ -319,6 +301,14 @@ namespace imageProcess
                         labelG.Text = "G(" + g.ToString() + ") ";
                         labelB.ForeColor = Color.Blue;
                         labelB.Text = "B(" + b.ToString() + ") ";
+                        // 畫出該顏色在狀態列
+                        Bitmap color = new Bitmap(15, 15);          // 建立圖像
+                        Graphics gg = Graphics.FromImage(color);    // 繪圖介面
+                        // 挑出顏色給筆刷
+                        SolidBrush brush = new SolidBrush(Color.FromArgb(255, r, g, b));
+                        // 畫矩形
+                        gg.FillRectangle(brush, 0, 0, 15, 15);
+                        pictureBox2.Image = color;
                     }
                 }
             }
@@ -326,6 +316,25 @@ namespace imageProcess
             {
                 MessageBox.Show(ex.Message);
             }
+        }
+
+        // 開啟負片功能視窗
+        private void menuNegative_Click(object sender, EventArgs e)
+        {
+            FormNegative f = new FormNegative();    // 建立FormNegative物件
+            f.pcxOrigin = pcxOrigin;                // 傳送ImgPcx物件
+            f.pcxGray = pcxGray;
+            f.ShowDialog(this);                     // 設定FormNegative為FormMain的上層，並開啟FormNegative視窗
+                                                    // 由於在FormMain的程式碼內使用this，所以this為FormMain物件本身
+        }
+
+        // 開啟灰階功能視窗
+        private void menuGray_Click(object sender, EventArgs e)
+        {
+            FormGray f = new FormGray();    // 建立FormGray物件
+            f.pcxOrigin = pcxOrigin;        // 傳送ImgPcx物件
+            f.ShowDialog(this);             // 設定FormGray為FormMain的上層，並開啟FormGray視窗
+                                            // 由於在FormMain的程式碼內使用this，所以this為FormMain物件本身
         }
 
         // 開啟鏡像功能視窗
@@ -365,12 +374,12 @@ namespace imageProcess
         }
 
         // 開啟縮放功能視窗
-        private void menuZoom_Click(object sender, EventArgs e)
+        private void menuScaling_Click(object sender, EventArgs e)
         {
-            FormZoom f = new FormZoom();    // 建立FormZoom物件
-            f.pcxOrigin = pcxOrigin;        // 傳送ImgPcx物件
-            f.ShowDialog(this);             // 設定FormZoom為FormMain的上層，並開啟FormZoom視窗
-                                            // 由於在FormMain的程式碼內使用this，所以this為FormMain物件本身
+            FormScaling f = new FormScaling();  // 建立FormScaling物件
+            f.pcxOrigin = pcxOrigin;            // 傳送ImgPcx物件
+            f.ShowDialog(this);                 // 設定FormScaling為FormMain的上層，並開啟FormScaling視窗
+                                                // 由於在FormMain的程式碼內使用this，所以this為FormMain物件本身
         }
 
         // 開啟透明度功能視窗

@@ -813,7 +813,7 @@ namespace imageProcess
             Bitmap converted = img.Clone(new Rectangle(0, 0, img.Width, img.Height), PixelFormat.Format24bppRgb);
             // 鎖定影像內容到記憶體
             // 將圖的資料存到記憶體, 可以直接對它操作
-            BitmapData data = converted.LockBits(new Rectangle(0, 0, head.width, head.height), ImageLockMode.ReadWrite, converted.PixelFormat);
+            BitmapData data = converted.LockBits(new Rectangle(0, 0, converted.Width, converted.Height), ImageLockMode.ReadWrite, converted.PixelFormat);
             // Stride - 影像scan的寬度
             byte[] bytes = new byte[data.Stride * data.Height]; // 存放整個圖像資料
             // 將圖像資料複製到陣列
@@ -856,7 +856,7 @@ namespace imageProcess
             Bitmap converted = img.Clone(new Rectangle(0, 0, img.Width, img.Height), PixelFormat.Format24bppRgb);
             // 鎖定影像內容到記憶體
             // 將圖的資料存到記憶體, 可以直接對它操作
-            BitmapData data = converted.LockBits(new Rectangle(0, 0, head.width, head.height), ImageLockMode.ReadWrite, converted.PixelFormat);
+            BitmapData data = converted.LockBits(new Rectangle(0, 0, converted.Width, converted.Height), ImageLockMode.ReadWrite, converted.PixelFormat);
             // Stride - 影像scan的寬度
             byte[] bytes = new byte[data.Stride * data.Height]; // 存放整個圖像資料
             // 將圖像資料複製到陣列
@@ -864,15 +864,24 @@ namespace imageProcess
             // Scan0 - 影像資料的起始位置
             Marshal.Copy(data.Scan0, bytes, 0, bytes.Length);
 
-            for (int i = 0; i < bytes.Length; i += 3)
+            int offset = data.Stride - converted.Width * 3; // 掃描寬度與顯示寬度的間隙, Stride為大於等於Width的最小4的整數倍
+            int height = converted.Height;
+            int width = converted.Width;
+            int index = 0;
+            for(int y = 0; y < height; ++y)
             {
-                byte b = bytes[i];
-                byte g = bytes[i + 1];
-                byte r = bytes[i + 2];
-                byte gray = (byte)(r * 0.299 + g * 0.587 + b * 0.114);
-                bytes[i] = gray;
-                bytes[i + 1] = gray;
-                bytes[i + 2] = gray;
+                for(int x = 0; x < width; ++x)
+                {
+                    double b = bytes[index];
+                    double g = bytes[index + 1];
+                    double r = bytes[index + 2];
+                    byte gray = (byte)(r * 0.299 + g * 0.587 + b * 0.114);
+                    bytes[index] = gray;
+                    bytes[index + 1] = gray;
+                    bytes[index + 2] = gray;
+                    index += 3;
+                }
+                index += offset; // 將index移過那段間隙
             }
 
             // 將資料複製到圖像物件
@@ -903,7 +912,7 @@ namespace imageProcess
             Bitmap converted = img.Clone(new Rectangle(0, 0, img.Width, img.Height), PixelFormat.Format24bppRgb);
             // 鎖定影像內容到記憶體
             // 將圖的資料存到記憶體, 可以直接對它操作
-            BitmapData data = converted.LockBits(new Rectangle(0, 0, head.width, head.height), ImageLockMode.ReadWrite, converted.PixelFormat);
+            BitmapData data = converted.LockBits(new Rectangle(0, 0, converted.Width, converted.Height), ImageLockMode.ReadWrite, converted.PixelFormat);
             // Stride - 影像scan的寬度
             byte[] bytes = new byte[data.Stride * data.Height]; // 存放整個圖像資料
             // 將圖像資料複製到陣列
@@ -911,24 +920,27 @@ namespace imageProcess
             // Scan0 - 影像資料的起始位置
             Marshal.Copy(data.Scan0, bytes, 0, bytes.Length);
 
-            int height = head.height;
-            // 要用bytesPerLine
-            int width = head.bytesPerLine;
+            int offset = data.Stride - converted.Width * 3; // 掃描寬度與顯示寬度的間隙, Stride為大於等於Width的最小4的整數倍
+            int height = converted.Height;
+            int width = converted.Width;
+            int index = 0;
             byte[] mirror_bytes = new byte[data.Stride * data.Height]; // 存放鏡像資料
+            int bytesPerLine = head.bytesPerLine;
             for (int y = 0; y < height; ++y)
             {
-                for(int x = 0; x < width; ++x)
+                for (int x = 0; x < width; ++x)
                 {
                     int mirrorX = (width - 1) - x;
-                    int oldIndex = 3 * (y * width + x);
-                    int newIndex = 3 * (y * width + mirrorX);
+                    int newIndex = 3 * (y * bytesPerLine + mirrorX); // 使用bytesPerLine
                     // B
-                    mirror_bytes[newIndex] = bytes[oldIndex];
+                    mirror_bytes[newIndex] = bytes[index];
                     // G
-                    mirror_bytes[newIndex + 1] = bytes[oldIndex + 1];
+                    mirror_bytes[newIndex + 1] = bytes[index + 1];
                     // R
-                    mirror_bytes[newIndex + 2] = bytes[oldIndex + 2];
+                    mirror_bytes[newIndex + 2] = bytes[index + 2];
+                    index += 3;
                 }
+                index += offset; // 將index移過那段間隙
             }
 
             // 將資料複製到圖像物件
@@ -959,7 +971,7 @@ namespace imageProcess
             Bitmap converted = img.Clone(new Rectangle(0, 0, img.Width, img.Height), PixelFormat.Format24bppRgb);
             // 鎖定影像內容到記憶體
             // 將圖的資料存到記憶體, 可以直接對它操作
-            BitmapData data = converted.LockBits(new Rectangle(0, 0, head.width, head.height), ImageLockMode.ReadWrite, converted.PixelFormat);
+            BitmapData data = converted.LockBits(new Rectangle(0, 0, converted.Width, converted.Height), ImageLockMode.ReadWrite, converted.PixelFormat);
             // Stride - 影像scan的寬度
             byte[] bytes = new byte[data.Stride * data.Height]; // 存放整個圖像資料
             // 將圖像資料複製到陣列
@@ -967,24 +979,27 @@ namespace imageProcess
             // Scan0 - 影像資料的起始位置
             Marshal.Copy(data.Scan0, bytes, 0, bytes.Length);
 
-            int height = head.height;
-            // 要用bytesPerLine
-            int width = head.bytesPerLine;
+            int offset = data.Stride - converted.Width * 3; // 掃描寬度與顯示寬度的間隙, Stride為大於等於Width的最小4的整數倍
+            int height = converted.Height;
+            int width = converted.Width;
+            int index = 0;
             byte[] mirror_bytes = new byte[data.Stride * data.Height]; // 存放鏡像資料
+            int bytesPerLine = head.bytesPerLine;
             for (int y = 0; y < height; ++y)
             {
                 for (int x = 0; x < width; ++x)
                 {
                     int mirrorY = (height - 1) - y;
-                    int oldIndex = 3 * (y * width + x);
-                    int newIndex = 3 * (mirrorY * width + x);
+                    int newIndex = 3 * (mirrorY * bytesPerLine + x); // 使用bytesPerLine
                     // B
-                    mirror_bytes[newIndex] = bytes[oldIndex];
+                    mirror_bytes[newIndex] = bytes[index];
                     // G
-                    mirror_bytes[newIndex + 1] = bytes[oldIndex + 1];
+                    mirror_bytes[newIndex + 1] = bytes[index + 1];
                     // R
-                    mirror_bytes[newIndex + 2] = bytes[oldIndex + 2];
+                    mirror_bytes[newIndex + 2] = bytes[index + 2];
+                    index += 3;
                 }
+                index += offset; // 將index移過那段間隙
             }
 
             // 將資料複製到圖像物件
@@ -1015,7 +1030,7 @@ namespace imageProcess
             Bitmap converted = img.Clone(new Rectangle(0, 0, img.Width, img.Height), PixelFormat.Format24bppRgb);
             // 鎖定影像內容到記憶體
             // 將圖的資料存到記憶體, 可以直接對它操作
-            BitmapData data = converted.LockBits(new Rectangle(0, 0, head.width, head.height), ImageLockMode.ReadWrite, converted.PixelFormat);
+            BitmapData data = converted.LockBits(new Rectangle(0, 0, converted.Width, converted.Height), ImageLockMode.ReadWrite, converted.PixelFormat);
             // Stride - 影像scan的寬度
             byte[] bytes = new byte[data.Stride * data.Height]; // 存放整個圖像資料
             // 將圖像資料複製到陣列
@@ -1023,16 +1038,17 @@ namespace imageProcess
             // Scan0 - 影像資料的起始位置
             Marshal.Copy(data.Scan0, bytes, 0, bytes.Length);
 
-            int height = head.height;
-            // 要用bytesPerLine
-            int width = head.bytesPerLine;
+            int offset = data.Stride - converted.Width * 3; // 掃描寬度與顯示寬度的間隙, Stride為大於等於Width的最小4的整數倍
+            int height = converted.Height;
+            int width = converted.Width;
+            int index = 0;
             byte[] mirror_bytes = new byte[data.Stride * data.Height]; // 存放鏡像資料
+            int bytesPerLine = head.bytesPerLine;
             for (int y = 0; y < height; ++y)
             {
                 for (int x = 0; x < width; ++x)
                 {
                     // 對稱線 y = x
-                    int index = 3 * (y * width + x);
                     if (x == y)
                     {
                         mirror_bytes[index] = bytes[index];
@@ -1043,7 +1059,7 @@ namespace imageProcess
                     {
                         int mirrorX = y;
                         int mirrorY = x;
-                        int mirrorIndex = 3 * (mirrorY * width + mirrorX);
+                        int mirrorIndex = 3 * (mirrorY * bytesPerLine + mirrorX); // 使用bytesPerLine
                         // B
                         mirror_bytes[mirrorIndex] = bytes[index];
                         // G
@@ -1051,7 +1067,9 @@ namespace imageProcess
                         // R
                         mirror_bytes[mirrorIndex + 2] = bytes[index + 2];
                     }
+                    index += 3;
                 }
+                index += offset; // 將index移過那段間隙
             }
 
             // 將資料複製到圖像物件
@@ -1082,7 +1100,7 @@ namespace imageProcess
             Bitmap converted = img.Clone(new Rectangle(0, 0, img.Width, img.Height), PixelFormat.Format24bppRgb);
             // 鎖定影像內容到記憶體
             // 將圖的資料存到記憶體, 可以直接對它操作
-            BitmapData data = converted.LockBits(new Rectangle(0, 0, head.width, head.height), ImageLockMode.ReadWrite, converted.PixelFormat);
+            BitmapData data = converted.LockBits(new Rectangle(0, 0, converted.Width, converted.Height), ImageLockMode.ReadWrite, converted.PixelFormat);
             // Stride - 影像scan的寬度
             byte[] bytes = new byte[data.Stride * data.Height]; // 存放整個圖像資料
             // 將圖像資料複製到陣列
@@ -1090,16 +1108,17 @@ namespace imageProcess
             // Scan0 - 影像資料的起始位置
             Marshal.Copy(data.Scan0, bytes, 0, bytes.Length);
 
-            int height = head.height;
-            // 要用bytesPerLine
-            int width = head.bytesPerLine;
+            int offset = data.Stride - converted.Width * 3; // 掃描寬度與顯示寬度的間隙, Stride為大於等於Width的最小4的整數倍
+            int height = converted.Height;
+            int width = converted.Width;
+            int index = 0;
             byte[] mirror_bytes = new byte[data.Stride * data.Height]; // 存放鏡像資料
+            int bytesPerLine = head.bytesPerLine;
             for (int y = 0; y < height; ++y)
             {
                 for (int x = 0; x < width; ++x)
                 {
                     // 對稱線 y = x - (width - 1)
-                    int index = 3 * (y * width + x);
                     if (y == (x - (width - 1))) // 對角線上像素不變
                     {
                         // B
@@ -1113,7 +1132,7 @@ namespace imageProcess
                     {
                         int mirrorX = (width - 1) - y;
                         int mirrorY = (width - 1) - x;
-                        int mirrorIndex = 3 * (mirrorY * width + mirrorX);
+                        int mirrorIndex = 3 * (mirrorY * bytesPerLine + mirrorX); // 使用bytesPerLine
                         // B
                         mirror_bytes[mirrorIndex] = bytes[index];
                         // G
@@ -1121,7 +1140,9 @@ namespace imageProcess
                         // R
                         mirror_bytes[mirrorIndex + 2] = bytes[index + 2];
                     }
+                    index += 3;
                 }
+                index += offset; // 將index移過那段間隙
             }
 
             // 將資料複製到圖像物件
@@ -1341,7 +1362,7 @@ namespace imageProcess
             Bitmap converted = img.Clone(new Rectangle(0, 0, img.Width, img.Height), PixelFormat.Format24bppRgb);
             // 鎖定影像內容到記憶體
             // 將圖的資料存到記憶體, 可以直接對它操作
-            BitmapData data = converted.LockBits(new Rectangle(0, 0, head.width, head.height), ImageLockMode.ReadWrite, converted.PixelFormat);
+            BitmapData data = converted.LockBits(new Rectangle(0, 0, converted.Width, converted.Height), ImageLockMode.ReadWrite, converted.PixelFormat);
             // Stride - 影像scan的寬度
             byte[] bytes = new byte[data.Stride * data.Height]; // 存放整個圖像資料
             // 將圖像資料複製到陣列
@@ -1349,18 +1370,20 @@ namespace imageProcess
             // Scan0 - 影像資料的起始位置
             Marshal.Copy(data.Scan0, bytes, 0, bytes.Length);
 
-            int height = head.height;
-            // 要用bytesPerLine
-            int width = head.bytesPerLine;
+            int offset = data.Stride - converted.Width * 3; // 掃描寬度與顯示寬度的間隙, Stride為大於等於Width的最小4的整數倍
+            int height = converted.Height;
+            int width = converted.Width;
+            int index = 0;
             byte[] bytesR = new byte[data.Stride * data.Height]; // 存放R資料
             for (int y = 0; y < height; ++y)
             {
                 for (int x = 0; x < width; ++x)
                 {
-                    int index = 3 * (y * width + x);
                     // R
                     bytesR[index + 2] = bytes[index + 2];
+                    index += 3;
                 }
+                index += offset; // 將index移過那段間隙
             }
 
             // 將資料複製到圖像物件
@@ -1391,7 +1414,7 @@ namespace imageProcess
             Bitmap converted = img.Clone(new Rectangle(0, 0, img.Width, img.Height), PixelFormat.Format24bppRgb);
             // 鎖定影像內容到記憶體
             // 將圖的資料存到記憶體, 可以直接對它操作
-            BitmapData data = converted.LockBits(new Rectangle(0, 0, head.width, head.height), ImageLockMode.ReadWrite, converted.PixelFormat);
+            BitmapData data = converted.LockBits(new Rectangle(0, 0, converted.Width, converted.Height), ImageLockMode.ReadWrite, converted.PixelFormat);
             // Stride - 影像scan的寬度
             byte[] bytes = new byte[data.Stride * data.Height]; // 存放整個圖像資料
             // 將圖像資料複製到陣列
@@ -1399,18 +1422,20 @@ namespace imageProcess
             // Scan0 - 影像資料的起始位置
             Marshal.Copy(data.Scan0, bytes, 0, bytes.Length);
 
-            int height = head.height;
-            // 要用bytesPerLine
-            int width = head.bytesPerLine;
+            int offset = data.Stride - converted.Width * 3; // 掃描寬度與顯示寬度的間隙, Stride為大於等於Width的最小4的整數倍
+            int height = converted.Height;
+            int width = converted.Width;
+            int index = 0;
             byte[] bytesG = new byte[data.Stride * data.Height]; // 存放G資料
             for (int y = 0; y < height; ++y)
             {
                 for (int x = 0; x < width; ++x)
                 {
-                    int index = 3 * (y * width + x);
                     // R
                     bytesG[index + 1] = bytes[index + 1];
+                    index += 3;
                 }
+                index += offset; // 將index移過那段間隙
             }
 
             // 將資料複製到圖像物件
@@ -1441,7 +1466,7 @@ namespace imageProcess
             Bitmap converted = img.Clone(new Rectangle(0, 0, img.Width, img.Height), PixelFormat.Format24bppRgb);
             // 鎖定影像內容到記憶體
             // 將圖的資料存到記憶體, 可以直接對它操作
-            BitmapData data = converted.LockBits(new Rectangle(0, 0, head.width, head.height), ImageLockMode.ReadWrite, converted.PixelFormat);
+            BitmapData data = converted.LockBits(new Rectangle(0, 0, converted.Width, converted.Height), ImageLockMode.ReadWrite, converted.PixelFormat);
             // Stride - 影像scan的寬度
             byte[] bytes = new byte[data.Stride * data.Height]; // 存放整個圖像資料
             // 將圖像資料複製到陣列
@@ -1449,18 +1474,20 @@ namespace imageProcess
             // Scan0 - 影像資料的起始位置
             Marshal.Copy(data.Scan0, bytes, 0, bytes.Length);
 
-            int height = head.height;
-            // 要用bytesPerLine
-            int width = head.bytesPerLine;
+            int offset = data.Stride - converted.Width * 3; // 掃描寬度與顯示寬度的間隙, Stride為大於等於Width的最小4的整數倍
+            int height = converted.Height;
+            int width = converted.Width;
+            int index = 0;
             byte[] bytesB = new byte[data.Stride * data.Height]; // 存放B資料
             for (int y = 0; y < height; ++y)
             {
                 for (int x = 0; x < width; ++x)
                 {
-                    int index = 3 * (y * width + x);
                     // B
                     bytesB[index] = bytes[index];
+                    index += 3;
                 }
+                index += offset; // 將index移過那段間隙
             }
 
             // 將資料複製到圖像物件
@@ -1492,7 +1519,7 @@ namespace imageProcess
             Bitmap converted = img.Clone(new Rectangle(0, 0, img.Width, img.Height), PixelFormat.Format24bppRgb);
             // 鎖定影像內容到記憶體
             // 將圖的資料存到記憶體, 可以直接對它操作
-            BitmapData data = converted.LockBits(new Rectangle(0, 0, head.width, head.height), ImageLockMode.ReadWrite, converted.PixelFormat);
+            BitmapData data = converted.LockBits(new Rectangle(0, 0, converted.Width, converted.Height), ImageLockMode.ReadWrite, converted.PixelFormat);
             // Stride - 影像scan的寬度
             byte[] bytes = new byte[data.Stride * data.Height]; // 存放整個圖像資料
             // 將圖像資料複製到陣列
@@ -1500,14 +1527,14 @@ namespace imageProcess
             // Scan0 - 影像資料的起始位置
             Marshal.Copy(data.Scan0, bytes, 0, bytes.Length);
 
-            int height = head.height;
-            // 要用bytesPerLine
-            int width = head.bytesPerLine;
+            int offset = data.Stride - converted.Width * 3; // 掃描寬度與顯示寬度的間隙, Stride為大於等於Width的最小4的整數倍
+            int height = converted.Height;
+            int width = converted.Width;
+            int index = 0;
             for (int y = 0; y < height; ++y)
             {
                 for (int x = 0; x < width; ++x)
                 {
-                    int index = 3 * (y * width + x);
                     // 小於threshold值設為0, 其餘設為255
                     if(bytes[index] <= value)
                     {
@@ -1521,7 +1548,9 @@ namespace imageProcess
                         bytes[index + 1] = 255;
                         bytes[index + 2] = 255;
                     }
+                    index += 3;
                 }
+                index += offset; // 將index移過那段間隙
             }
 
             // 將資料複製到圖像物件
@@ -1563,7 +1592,7 @@ namespace imageProcess
             Bitmap converted = img.Clone(new Rectangle(0, 0, img.Width, img.Height), PixelFormat.Format24bppRgb);
             // 鎖定影像內容到記憶體
             // 將圖的資料存到記憶體, 可以直接對它操作
-            BitmapData data = converted.LockBits(new Rectangle(0, 0, head.width, head.height), ImageLockMode.ReadOnly, converted.PixelFormat);
+            BitmapData data = converted.LockBits(new Rectangle(0, 0, converted.Width, converted.Height), ImageLockMode.ReadOnly, converted.PixelFormat);
             // Stride - 影像scan的寬度
             byte[] bytes = new byte[data.Stride * data.Height]; // 存放整個圖像資料
             // 將圖像資料複製到陣列
@@ -1651,7 +1680,7 @@ namespace imageProcess
             Bitmap converted = img.Clone(new Rectangle(0, 0, img.Width, img.Height), PixelFormat.Format24bppRgb);
             // 鎖定影像內容到記憶體
             // 將圖的資料存到記憶體, 可以直接對它操作
-            BitmapData data = converted.LockBits(new Rectangle(0, 0, head.width, head.height), ImageLockMode.ReadOnly, converted.PixelFormat);
+            BitmapData data = converted.LockBits(new Rectangle(0, 0, converted.Width, converted.Height), ImageLockMode.ReadOnly, converted.PixelFormat);
             // Stride - 影像scan的寬度
             byte[] bytes = new byte[data.Stride * data.Height]; // 存放整個圖像資料
             // 將圖像資料複製到陣列
@@ -1660,7 +1689,7 @@ namespace imageProcess
             Marshal.Copy(data.Scan0, bytes, 0, bytes.Length);
 
             // 放大後的影像 (width使用原圖的bytesPerLine)
-            Bitmap newImg = new Bitmap((int)(head.bytesPerLine * ratio + 0.5), (int)(head.height * ratio + 0.5), PixelFormat.Format24bppRgb);
+            Bitmap newImg = new Bitmap((int)(converted.Width * ratio + 0.5), (int)(converted.Height * ratio + 0.5), PixelFormat.Format24bppRgb);
             // 鎖定影像內容到記憶體
             // 將圖的資料存到記憶體, 可以直接對它操作
             BitmapData newData = newImg.LockBits(new Rectangle(0, 0, newImg.Width, newImg.Height), ImageLockMode.ReadWrite, newImg.PixelFormat);
@@ -1671,28 +1700,32 @@ namespace imageProcess
             // Scan0 - 影像資料的起始位置
             Marshal.Copy(newData.Scan0, newBytes, 0, newBytes.Length);
 
+            int offset = newData.Stride - newImg.Width * 3; // 掃描寬度與顯示寬度的間隙, Stride為大於等於Width的最小4的整數倍
             int height = newImg.Height;
             int width = newImg.Width;
+            int index = 0;
+            int bytesPerLine = head.bytesPerLine;
             for (int y = 0; y < height; ++y)
             {
                 for (int x = 0; x < width; ++x)
                 {
                     int map_x = (int)(x / ratio + 0.5); // +0.5後取整等同做四捨五入
-                    if(map_x >= head.bytesPerLine)
+                    if(map_x >= bytesPerLine)
                     {
-                        map_x = head.bytesPerLine - 1;
+                        map_x = bytesPerLine - 1;
                     }
                     int map_y = (int)(y / ratio + 0.5); // +0.5後取整等同做四捨五入
                     if (map_y >= head.height)
                     {
                         map_y = head.height - 1;
                     }
-                    int newIndex = 3 * (y * width + x);
-                    int mapIndex = 3 * (map_y * head.bytesPerLine + map_x); // width使用原圖的bytesPerLine
-                    newBytes[newIndex] = bytes[mapIndex];
-                    newBytes[newIndex + 1] = bytes[mapIndex + 1];
-                    newBytes[newIndex + 2] = bytes[mapIndex + 2];
+                    int mapIndex = 3 * (map_y * bytesPerLine + map_x); // width使用原圖的bytesPerLine
+                    newBytes[index] = bytes[mapIndex];
+                    newBytes[index + 1] = bytes[mapIndex + 1];
+                    newBytes[index + 2] = bytes[mapIndex + 2];
+                    index += 3;
                 }
+                index += offset; // 將index移過那段間隙
             }
 
             // 將資料複製到圖像物件
@@ -1726,7 +1759,7 @@ namespace imageProcess
             Bitmap converted = img.Clone(new Rectangle(0, 0, img.Width, img.Height), PixelFormat.Format24bppRgb);
             // 鎖定影像內容到記憶體
             // 將圖的資料存到記憶體, 可以直接對它操作
-            BitmapData data = converted.LockBits(new Rectangle(0, 0, head.width, head.height), ImageLockMode.ReadOnly, converted.PixelFormat);
+            BitmapData data = converted.LockBits(new Rectangle(0, 0, converted.Width, converted.Height), ImageLockMode.ReadOnly, converted.PixelFormat);
             // Stride - 影像scan的寬度
             byte[] bytes = new byte[data.Stride * data.Height]; // 存放整個圖像資料
             // 將圖像資料複製到陣列
@@ -1735,7 +1768,7 @@ namespace imageProcess
             Marshal.Copy(data.Scan0, bytes, 0, bytes.Length);
 
             // 放大後的影像 (width使用原圖的bytesPerLine)
-            Bitmap newImg = new Bitmap((int)(head.bytesPerLine * ratio), (int)(head.height * ratio), PixelFormat.Format24bppRgb);
+            Bitmap newImg = new Bitmap((int)(converted.Width * ratio + 0.5), (int)(converted.Height * ratio + 0.5), PixelFormat.Format24bppRgb);
             // 鎖定影像內容到記憶體
             // 將圖的資料存到記憶體, 可以直接對它操作
             BitmapData newData = newImg.LockBits(new Rectangle(0, 0, newImg.Width, newImg.Height), ImageLockMode.ReadWrite, newImg.PixelFormat);
@@ -1746,16 +1779,19 @@ namespace imageProcess
             // Scan0 - 影像資料的起始位置
             Marshal.Copy(newData.Scan0, newBytes, 0, newBytes.Length);
 
+            int offset = newData.Stride - newImg.Width * 3; // 掃描寬度與顯示寬度的間隙, Stride為大於等於Width的最小4的整數倍
             int height = newImg.Height;
             int width = newImg.Width;
+            int index = 0;
+            int bytesPerLine = head.bytesPerLine;
             for (int y = 0; y < height; ++y)
             {
                 for (int x = 0; x < width; ++x)
                 {
                     double map_x = x / ratio;
-                    if (map_x >= head.bytesPerLine - 1)
+                    if (map_x >= bytesPerLine - 1)
                     {
-                        map_x = head.bytesPerLine - 2;
+                        map_x = bytesPerLine - 2;
                     }
                     double map_y = y / ratio;
                     if (map_y >= head.height - 1)
@@ -1765,18 +1801,19 @@ namespace imageProcess
                     // pixel值由對應的周圍四個pixel值決定
                     int i = (int)map_x;
                     int j = (int)map_y;
-                    int newIndex = 3 * (y * width + x);
-                    int mapIndex1 = 3 * (j * head.bytesPerLine + i); // width使用原圖的bytesPerLine
-                    int mapIndex2 = 3 * (j * head.bytesPerLine + (i + 1));
-                    int mapIndex3 = 3 * ((j + 1) * head.bytesPerLine + i);
-                    int mapIndex4 = 3 * ((j + 1) * head.bytesPerLine + (i + 1));
+                    int mapIndex1 = 3 * (j * bytesPerLine + i); // width使用原圖的bytesPerLine
+                    int mapIndex2 = 3 * (j * bytesPerLine + (i + 1));
+                    int mapIndex3 = 3 * ((j + 1) * bytesPerLine + i);
+                    int mapIndex4 = 3 * ((j + 1) * bytesPerLine + (i + 1));
                     int b = (bytes[mapIndex1] + bytes[mapIndex2] + bytes[mapIndex3] + bytes[mapIndex4]) / 4;
                     int g = (bytes[mapIndex1 + 1] + bytes[mapIndex2 + 1] + bytes[mapIndex3 + 1] + bytes[mapIndex4 + 1]) / 4;
                     int r = (bytes[mapIndex1 + 2] + bytes[mapIndex2 + 2] + bytes[mapIndex3 + 2] + bytes[mapIndex4 + 2]) / 4;
-                    newBytes[newIndex] = (byte)Math.Min(b, 255);
-                    newBytes[newIndex + 1] = (byte)Math.Min(g, 255);
-                    newBytes[newIndex + 2] = (byte)Math.Min(r, 255);
+                    newBytes[index] = (byte)Math.Min(b, 255);
+                    newBytes[index + 1] = (byte)Math.Min(g, 255);
+                    newBytes[index + 2] = (byte)Math.Min(r, 255);
+                    index += 3;
                 }
+                index += offset; // 將index移過那段間隙
             }
 
             // 將資料複製到圖像物件
@@ -1795,9 +1832,6 @@ namespace imageProcess
          */
         public void ZoomOut_Decimation(double ratio)
         {
-            // 只接受整數倍率
-            //ratio = Math.Round(ratio);
-
             /*
              * 索引類型的圖片，其header有一個顏色表，這個表按照一定的規律存儲了所有的可能在這張圖片中出現的顏色。
              * 它的每一個點的像素值(ARGB)並不是直接存儲的。在存儲具體點的數據的地方之只是存儲其在顏色表中的索引，
@@ -1812,7 +1846,7 @@ namespace imageProcess
             Bitmap converted = img.Clone(new Rectangle(0, 0, img.Width, img.Height), PixelFormat.Format24bppRgb);
             // 鎖定影像內容到記憶體
             // 將圖的資料存到記憶體, 可以直接對它操作
-            BitmapData data = converted.LockBits(new Rectangle(0, 0, head.width, head.height), ImageLockMode.ReadOnly, converted.PixelFormat);
+            BitmapData data = converted.LockBits(new Rectangle(0, 0, converted.Width, converted.Height), ImageLockMode.ReadOnly, converted.PixelFormat);
             // Stride - 影像scan的寬度
             byte[] bytes = new byte[data.Stride * data.Height]; // 存放整個圖像資料
             // 將圖像資料複製到陣列
@@ -1820,8 +1854,8 @@ namespace imageProcess
             // Scan0 - 影像資料的起始位置
             Marshal.Copy(data.Scan0, bytes, 0, bytes.Length);
 
-            // 縮小後的影像 (width使用原圖的bytesPerLine)
-            Bitmap newImg = new Bitmap((int)(head.bytesPerLine / ratio + 0.5), (int)(head.height / ratio + 0.5), PixelFormat.Format24bppRgb);
+            // 縮小後的影像
+            Bitmap newImg = new Bitmap((int)(converted.Width / ratio + 0.5), (int)(converted.Height / ratio + 0.5), PixelFormat.Format24bppRgb);
             // 鎖定影像內容到記憶體
             // 將圖的資料存到記憶體, 可以直接對它操作
             BitmapData newData = newImg.LockBits(new Rectangle(0, 0, newImg.Width, newImg.Height), ImageLockMode.ReadWrite, newImg.PixelFormat);
@@ -1832,28 +1866,32 @@ namespace imageProcess
             // Scan0 - 影像資料的起始位置
             Marshal.Copy(newData.Scan0, newBytes, 0, newBytes.Length);
 
+            int offset = newData.Stride - newImg.Width * 3; // 掃描寬度與顯示寬度的間隙, Stride為大於等於Width的最小4的整數倍
             int height = newImg.Height;
             int width = newImg.Width;
+            int index = 0;
+            int bytesPerLine = head.bytesPerLine;
             for (int y = 0; y < height; ++y)
             {
                 for (int x = 0; x < width; ++x)
                 {
                     int map_x = (int)(x * ratio + 0.5); // +0.5後取整等同做四捨五入
-                    if (map_x >= head.bytesPerLine)
+                    if (map_x >= bytesPerLine)
                     {
-                        map_x = head.bytesPerLine - 1;
+                        map_x = bytesPerLine - 1;
                     }
                     int map_y = (int)(y * ratio + 0.5); // +0.5後取整等同做四捨五入
                     if (map_y >= head.height)
                     {
                         map_y = head.height - 1;
                     }
-                    int newIndex = 3 * (y * width + x);
-                    int mapIndex = 3 * (map_y * head.bytesPerLine + map_x); // width使用原圖的bytesPerLine
-                    newBytes[newIndex] = bytes[mapIndex];
-                    newBytes[newIndex + 1] = bytes[mapIndex + 1];
-                    newBytes[newIndex + 2] = bytes[mapIndex + 2];
+                    int mapIndex = 3 * (map_y * bytesPerLine + map_x); // width使用原圖的bytesPerLine
+                    newBytes[index] = bytes[mapIndex];
+                    newBytes[index + 1] = bytes[mapIndex + 1];
+                    newBytes[index + 2] = bytes[mapIndex + 2];
+                    index += 3;
                 }
+                index += offset; // 將index移過那段間隙
             }
 
             // 將資料複製到圖像物件
@@ -1872,9 +1910,6 @@ namespace imageProcess
          */
         public void ZoomOut_Interpolation(double ratio)
         {
-            // 只接受整數倍率
-            ratio = Math.Round(ratio);
-
             /*
              * 索引類型的圖片，其header有一個顏色表，這個表按照一定的規律存儲了所有的可能在這張圖片中出現的顏色。
              * 它的每一個點的像素值(ARGB)並不是直接存儲的。在存儲具體點的數據的地方之只是存儲其在顏色表中的索引，
@@ -1889,7 +1924,7 @@ namespace imageProcess
             Bitmap converted = img.Clone(new Rectangle(0, 0, img.Width, img.Height), PixelFormat.Format24bppRgb);
             // 鎖定影像內容到記憶體
             // 將圖的資料存到記憶體, 可以直接對它操作
-            BitmapData data = converted.LockBits(new Rectangle(0, 0, head.width, head.height), ImageLockMode.ReadOnly, converted.PixelFormat);
+            BitmapData data = converted.LockBits(new Rectangle(0, 0, converted.Width, converted.Height), ImageLockMode.ReadOnly, converted.PixelFormat);
             // Stride - 影像scan的寬度
             byte[] bytes = new byte[data.Stride * data.Height]; // 存放整個圖像資料
             // 將圖像資料複製到陣列
@@ -1898,7 +1933,7 @@ namespace imageProcess
             Marshal.Copy(data.Scan0, bytes, 0, bytes.Length);
 
             // 縮小後的影像 (width使用原圖的bytesPerLine)
-            Bitmap newImg = new Bitmap((int)(head.bytesPerLine / ratio), (int)(head.height / ratio), PixelFormat.Format24bppRgb);
+            Bitmap newImg = new Bitmap((int)(converted.Width / ratio + 0.5), (int)(converted.Height / ratio + 0.5), PixelFormat.Format24bppRgb);
             // 鎖定影像內容到記憶體
             // 將圖的資料存到記憶體, 可以直接對它操作
             BitmapData newData = newImg.LockBits(new Rectangle(0, 0, newImg.Width, newImg.Height), ImageLockMode.ReadWrite, newImg.PixelFormat);
@@ -1909,16 +1944,19 @@ namespace imageProcess
             // Scan0 - 影像資料的起始位置
             Marshal.Copy(newData.Scan0, newBytes, 0, newBytes.Length);
 
+            int offset = newData.Stride - newImg.Width * 3; // 掃描寬度與顯示寬度的間隙
             int height = newImg.Height;
             int width = newImg.Width;
+            int index = 0;
+            int bytesPerLine = head.bytesPerLine;
             for (int y = 0; y < height; ++y)
             {
                 for (int x = 0; x < width; ++x)
                 {
                     double map_x = x * ratio;
-                    if (map_x >= head.bytesPerLine - 1)
+                    if (map_x >= bytesPerLine - 1)
                     {
-                        map_x = head.bytesPerLine - 2;
+                        map_x = bytesPerLine - 2;
                     }
                     double map_y = y * ratio;
                     if (map_y >= head.height - 1)
@@ -1928,18 +1966,19 @@ namespace imageProcess
                     // pixel值由對應的周圍四個pixel值決定
                     int i = (int)map_x;
                     int j = (int)map_y;
-                    int newIndex = 3 * (y * width + x);
-                    int mapIndex1 = 3 * (j * head.bytesPerLine + i); // width使用原圖的bytesPerLine
-                    int mapIndex2 = 3 * (j * head.bytesPerLine + (i + 1));
-                    int mapIndex3 = 3 * ((j + 1) * head.bytesPerLine + i);
-                    int mapIndex4 = 3 * ((j + 1) * head.bytesPerLine + (i + 1));
+                    int mapIndex1 = 3 * (j * bytesPerLine + i); // width使用原圖的bytesPerLine
+                    int mapIndex2 = 3 * (j * bytesPerLine + (i + 1));
+                    int mapIndex3 = 3 * ((j + 1) * bytesPerLine + i);
+                    int mapIndex4 = 3 * ((j + 1) * bytesPerLine + (i + 1));
                     int b = (bytes[mapIndex1] + bytes[mapIndex2] + bytes[mapIndex3] + bytes[mapIndex4]) / 4;
                     int g = (bytes[mapIndex1 + 1] + bytes[mapIndex2 + 1] + bytes[mapIndex3 + 1] + bytes[mapIndex4 + 1]) / 4;
                     int r = (bytes[mapIndex1 + 2] + bytes[mapIndex2 + 2] + bytes[mapIndex3 + 2] + bytes[mapIndex4 + 2]) / 4;
-                    newBytes[newIndex] = (byte)Math.Min(b, 255);
-                    newBytes[newIndex + 1] = (byte)Math.Min(g, 255);
-                    newBytes[newIndex + 2] = (byte)Math.Min(r, 255);
+                    newBytes[index] = (byte)Math.Min(b, 255);
+                    newBytes[index + 1] = (byte)Math.Min(g, 255);
+                    newBytes[index + 2] = (byte)Math.Min(r, 255);
+                    index += 3;
                 }
+                index += offset; // 將index移過那段間隙
             }
 
             // 將資料複製到圖像物件
@@ -1957,7 +1996,7 @@ namespace imageProcess
          * @cover : 要疊的圖
          * @t : 要疊的圖的透明百分比
          */
-        public void Transparency(Bitmap cover, float t)
+        public void Transparency(ImgPcx cover, float t)
         {
             /*
              * 索引類型的圖片，其header有一個顏色表，這個表按照一定的規律存儲了所有的可能在這張圖片中出現的顏色。
@@ -1973,7 +2012,7 @@ namespace imageProcess
             Bitmap converted = img.Clone(new Rectangle(0, 0, img.Width, img.Height), PixelFormat.Format24bppRgb);
             // 鎖定影像內容到記憶體
             // 將圖的資料存到記憶體, 可以直接對它操作
-            BitmapData data = converted.LockBits(new Rectangle(0, 0, head.width, head.height), ImageLockMode.ReadWrite, converted.PixelFormat);
+            BitmapData data = converted.LockBits(new Rectangle(0, 0, converted.Width, converted.Height), ImageLockMode.ReadWrite, converted.PixelFormat);
             // Stride - 影像scan的寬度
             byte[] bytes = new byte[data.Stride * data.Height]; // 存放整個圖像資料
             // 將圖像資料複製到陣列
@@ -1982,7 +2021,7 @@ namespace imageProcess
             Marshal.Copy(data.Scan0, bytes, 0, bytes.Length);
 
             // 複製要疊的圖並轉換格式
-            Bitmap cover_converted = cover.Clone(new Rectangle(0, 0, cover.Width, cover.Height), PixelFormat.Format24bppRgb);
+            Bitmap cover_converted = cover.pcxImg.Clone(new Rectangle(0, 0, cover.pcxImg.Width, cover.pcxImg.Height), PixelFormat.Format24bppRgb);
             // 鎖定影像內容到記憶體
             // 將圖的資料存到記憶體, 可以直接對它操作
             BitmapData coverData = cover_converted.LockBits(new Rectangle(0, 0, cover_converted.Width, cover_converted.Height), ImageLockMode.ReadOnly, cover_converted.PixelFormat);
@@ -1993,20 +2032,27 @@ namespace imageProcess
             // Scan0 - 影像資料的起始位置
             Marshal.Copy(coverData.Scan0, coverBytes, 0, coverBytes.Length);
 
+            int offset = data.Stride - converted.Width * 3; // 掃描寬度與顯示寬度的間隙
             int height = converted.Height;
             int width = converted.Width;
-            int coverWidth = cover.Width;
+            int index = 0;
+            //int height = Math.Min(converted.Height, cover.pcxImg.Height);
+            //int width = Math.Min(head.bytesPerLine, cover.head.bytesPerLine);
+            /*int height = converted.Height;
+            int width = converted.Width;*/
+            int coverWidth = cover.head.bytesPerLine;
             for (int y = 0; y < height; ++y)
             {
                 for (int x = 0; x < width; ++x)
                 {
-                    int index = 3 * (y * width + x);
                     int coverIndex = 3 * (y * coverWidth + x);
                     float p = 1 - t;
                     bytes[index] = (byte)(t * coverBytes[coverIndex] + p * bytes[index]);
                     bytes[index + 1] = (byte)(t * coverBytes[coverIndex + 1] + p * bytes[index + 1]);
                     bytes[index + 2] = (byte)(t * coverBytes[coverIndex + 2] + p * bytes[index + 2]);
+                    index += 3;
                 }
+                index += offset;
             }
 
             // 將資料複製到圖像物件
@@ -2122,7 +2168,7 @@ namespace imageProcess
             Bitmap converted = img.Clone(new Rectangle(0, 0, img.Width, img.Height), PixelFormat.Format24bppRgb);
             // 鎖定影像內容到記憶體
             // 將圖的資料存到記憶體, 可以直接對它操作
-            BitmapData data = converted.LockBits(new Rectangle(0, 0, head.width, head.height), ImageLockMode.ReadWrite, converted.PixelFormat);
+            BitmapData data = converted.LockBits(new Rectangle(0, 0, converted.Width, converted.Height), ImageLockMode.ReadWrite, converted.PixelFormat);
             // Stride - 影像scan的寬度
             byte[] bytes = new byte[data.Stride * data.Height]; // 存放整個圖像資料
             // 將圖像資料複製到陣列
@@ -2130,18 +2176,31 @@ namespace imageProcess
             // Scan0 - 影像資料的起始位置
             Marshal.Copy(data.Scan0, bytes, 0, bytes.Length);
 
+            int offset = data.Stride - converted.Width * 3; // 掃描寬度與顯示寬度的間隙
+            int height = converted.Height;
+            int width = converted.Width;
+            int index = 0;
             byte max = 255;
             byte min = 0;
-            for (int i = 0; i < bytes.Length; ++i)
+            for(int y = 0; y < height; ++y)
             {
-                if((n & bytes[i]) == n)
+                for(int x = 0; x < width; ++x)
                 {
-                    bytes[i] = max;
+                    if ((n & bytes[index]) == n)
+                    {
+                        bytes[index] = max;
+                        bytes[index + 1] = max;
+                        bytes[index + 2] = max;
+                    }
+                    else
+                    {
+                        bytes[index] = min;
+                        bytes[index + 1] = min;
+                        bytes[index + 2] = min;
+                    }
+                    index += 3;
                 }
-                else
-                {
-                    bytes[i] = min;
-                }
+                index += offset;
             }
 
             // 將資料複製到圖像物件
@@ -2158,7 +2217,7 @@ namespace imageProcess
          * 增加浮水印
          * @mark : 浮水印圖片
          */
-        public void Watermark(Bitmap mark)
+        public void Watermark(ImgPcx mark)
         {
             /*
              * 索引類型的圖片，其header有一個顏色表，這個表按照一定的規律存儲了所有的可能在這張圖片中出現的顏色。
@@ -2174,7 +2233,7 @@ namespace imageProcess
             Bitmap converted = img.Clone(new Rectangle(0, 0, img.Width, img.Height), PixelFormat.Format24bppRgb);
             // 鎖定影像內容到記憶體
             // 將圖的資料存到記憶體, 可以直接對它操作
-            BitmapData data = converted.LockBits(new Rectangle(0, 0, head.width, head.height), ImageLockMode.ReadWrite, converted.PixelFormat);
+            BitmapData data = converted.LockBits(new Rectangle(0, 0, converted.Width, converted.Height), ImageLockMode.ReadWrite, converted.PixelFormat);
             // Stride - 影像scan的寬度
             byte[] bytes = new byte[data.Stride * data.Height]; // 存放整個圖像資料
             // 將圖像資料複製到陣列
@@ -2183,7 +2242,7 @@ namespace imageProcess
             Marshal.Copy(data.Scan0, bytes, 0, bytes.Length);
 
             // 複製浮水印影像並轉換格式
-            Bitmap mark_converted = mark.Clone(new Rectangle(0, 0, mark.Width, mark.Height), PixelFormat.Format24bppRgb);
+            Bitmap mark_converted = mark.pcxImg.Clone(new Rectangle(0, 0, mark.pcxImg.Width, mark.pcxImg.Height), PixelFormat.Format24bppRgb);
             // 鎖定影像內容到記憶體
             // 將圖的資料存到記憶體, 可以直接對它操作
             BitmapData markData = mark_converted.LockBits(new Rectangle(0, 0, mark_converted.Width, mark_converted.Height), ImageLockMode.ReadWrite, mark_converted.PixelFormat);
@@ -2195,13 +2254,33 @@ namespace imageProcess
             Marshal.Copy(markData.Scan0, markBytes, 0, markBytes.Length);
 
             // 修改後面4個bits來加入浮水印
-            for(int i = 0; i < markBytes.Length; ++i)
+            int offset = data.Stride - converted.Width * 3; // 掃描寬度與顯示寬度的間隙
+            int index = 0;
+            int height = Math.Min(head.height, mark.head.height);
+            int width = Math.Min(head.bytesPerLine, mark.head.bytesPerLine);
+            for (int y = 0; y < height; ++y)
+            {
+                for (int x = 0; x < width; ++x)
+                {
+                    // F0 = 1111 0000
+                    // F  = 0000 1111
+                    bytes[index] &= 0xF0;
+                    bytes[index + 1] &= 0xF0;
+                    bytes[index + 2] &= 0xF0;
+                    bytes[index] += (byte)(0xF & markBytes[index]);
+                    bytes[index + 1] += (byte)(0xF & markBytes[index + 1]);
+                    bytes[index + 2] += (byte)(0xF & markBytes[index + 2]);
+                    index += 3;
+                }
+                index += offset;
+            }
+            /*for (int i = 0; i < markBytes.Length; ++i)
             {
                 // F0 = 1111 0000
                 // F  = 0000 1111
                 bytes[i] &= 0xF0;
                 bytes[i] += (byte)(0xF & markBytes[i]);
-            }
+            }*/
 
             // 將資料複製到圖像物件
             // Marshal.Copy(src, startIndex, dstPtr, length)
@@ -2233,7 +2312,7 @@ namespace imageProcess
             Bitmap converted = img.Clone(new Rectangle(0, 0, img.Width, img.Height), PixelFormat.Format24bppRgb);
             // 鎖定影像內容到記憶體
             // 將圖的資料存到記憶體, 可以直接對它操作
-            BitmapData data = converted.LockBits(new Rectangle(0, 0, head.width, head.height), ImageLockMode.ReadWrite, converted.PixelFormat);
+            BitmapData data = converted.LockBits(new Rectangle(0, 0, converted.Width, converted.Height), ImageLockMode.ReadWrite, converted.PixelFormat);
             // Stride - 影像scan的寬度
             byte[] bytes = new byte[data.Stride * data.Height]; // 存放整個圖像資料
             // 將圖像資料複製到陣列
@@ -2307,7 +2386,7 @@ namespace imageProcess
             Bitmap converted = img.Clone(new Rectangle(0, 0, img.Width, img.Height), PixelFormat.Format24bppRgb);
             // 鎖定影像內容到記憶體
             // 將圖的資料存到記憶體, 可以直接對它操作
-            BitmapData data = converted.LockBits(new Rectangle(0, 0, head.width, head.height), ImageLockMode.ReadWrite, converted.PixelFormat);
+            BitmapData data = converted.LockBits(new Rectangle(0, 0, converted.Width, converted.Height), ImageLockMode.ReadWrite, converted.PixelFormat);
             // Stride - 影像scan的寬度
             byte[] bytes = new byte[data.Stride * data.Height]; // 存放整個圖像資料
             // 將圖像資料複製到陣列
@@ -2355,7 +2434,7 @@ namespace imageProcess
             Bitmap converted = img.Clone(new Rectangle(0, 0, img.Width, img.Height), PixelFormat.Format24bppRgb);
             // 鎖定影像內容到記憶體
             // 將圖的資料存到記憶體, 可以直接對它操作
-            BitmapData data = converted.LockBits(new Rectangle(0, 0, head.width, head.height), ImageLockMode.ReadWrite, converted.PixelFormat);
+            BitmapData data = converted.LockBits(new Rectangle(0, 0, converted.Width, converted.Height), ImageLockMode.ReadWrite, converted.PixelFormat);
             // Stride - 影像scan的寬度
             byte[] bytes = new byte[data.Stride * data.Height]; // 存放整個圖像資料
             // 將圖像資料複製到陣列
@@ -2460,7 +2539,7 @@ namespace imageProcess
             Bitmap converted = img.Clone(new Rectangle(0, 0, img.Width, img.Height), PixelFormat.Format24bppRgb);
             // 鎖定影像內容到記憶體
             // 將圖的資料存到記憶體, 可以直接對它操作
-            BitmapData data = converted.LockBits(new Rectangle(0, 0, head.width, head.height), ImageLockMode.ReadWrite, converted.PixelFormat);
+            BitmapData data = converted.LockBits(new Rectangle(0, 0, converted.Width, converted.Height), ImageLockMode.ReadWrite, converted.PixelFormat);
             // Stride - 影像scan的寬度
             byte[] bytes = new byte[data.Stride * data.Height]; // 存放整個圖像資料
             // 將圖像資料複製到陣列
@@ -2642,7 +2721,7 @@ namespace imageProcess
             Bitmap converted = img.Clone(new Rectangle(0, 0, img.Width, img.Height), PixelFormat.Format24bppRgb);
             // 鎖定影像內容到記憶體
             // 將圖的資料存到記憶體, 可以直接對它操作
-            BitmapData data = converted.LockBits(new Rectangle(0, 0, head.width, head.height), ImageLockMode.ReadWrite, converted.PixelFormat);
+            BitmapData data = converted.LockBits(new Rectangle(0, 0, converted.Width, converted.Height), ImageLockMode.ReadWrite, converted.PixelFormat);
             // Stride - 影像scan的寬度
             byte[] bytes = new byte[data.Stride * data.Height]; // 存放整個圖像資料
             // 將圖像資料複製到陣列
@@ -2738,7 +2817,7 @@ namespace imageProcess
             Bitmap converted = img.Clone(new Rectangle(0, 0, img.Width, img.Height), PixelFormat.Format24bppRgb);
             // 鎖定影像內容到記憶體
             // 將圖的資料存到記憶體, 可以直接對它操作
-            BitmapData data = converted.LockBits(new Rectangle(0, 0, head.width, head.height), ImageLockMode.ReadWrite, converted.PixelFormat);
+            BitmapData data = converted.LockBits(new Rectangle(0, 0, converted.Width, converted.Height), ImageLockMode.ReadWrite, converted.PixelFormat);
             // Stride - 影像scan的寬度
             byte[] bytes = new byte[data.Stride * data.Height]; // 存放整個圖像資料
             // 將圖像資料複製到陣列
@@ -2840,7 +2919,7 @@ namespace imageProcess
             Bitmap converted = img.Clone(new Rectangle(0, 0, img.Width, img.Height), PixelFormat.Format24bppRgb);
             // 鎖定影像內容到記憶體
             // 將圖的資料存到記憶體, 可以直接對它操作
-            BitmapData data = converted.LockBits(new Rectangle(0, 0, head.width, head.height), ImageLockMode.ReadWrite, converted.PixelFormat);
+            BitmapData data = converted.LockBits(new Rectangle(0, 0, converted.Width, converted.Height), ImageLockMode.ReadWrite, converted.PixelFormat);
             // Stride - 影像scan的寬度
             byte[] bytes = new byte[data.Stride * data.Height]; // 存放整個圖像資料
             // 將圖像資料複製到陣列
@@ -2952,7 +3031,7 @@ namespace imageProcess
             Bitmap converted = img.Clone(new Rectangle(0, 0, img.Width, img.Height), PixelFormat.Format24bppRgb);
             // 鎖定影像內容到記憶體
             // 將圖的資料存到記憶體, 可以直接對它操作
-            BitmapData data = converted.LockBits(new Rectangle(0, 0, head.width, head.height), ImageLockMode.ReadWrite, converted.PixelFormat);
+            BitmapData data = converted.LockBits(new Rectangle(0, 0, converted.Width, converted.Height), ImageLockMode.ReadWrite, converted.PixelFormat);
             // Stride - 影像scan的寬度
             byte[] bytes = new byte[data.Stride * data.Height]; // 存放整個圖像資料
             // 將圖像資料複製到陣列
@@ -3063,7 +3142,7 @@ namespace imageProcess
             Bitmap converted = img.Clone(new Rectangle(0, 0, img.Width, img.Height), PixelFormat.Format24bppRgb);
             // 鎖定影像內容到記憶體
             // 將圖的資料存到記憶體, 可以直接對它操作
-            BitmapData data = converted.LockBits(new Rectangle(0, 0, head.width, head.height), ImageLockMode.ReadWrite, converted.PixelFormat);
+            BitmapData data = converted.LockBits(new Rectangle(0, 0, converted.Width, converted.Height), ImageLockMode.ReadWrite, converted.PixelFormat);
             // Stride - 影像scan的寬度
             byte[] bytes = new byte[data.Stride * data.Height]; // 存放整個圖像資料
             // 將圖像資料複製到陣列

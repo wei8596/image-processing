@@ -59,7 +59,7 @@ namespace imageProcess
             float percentage = (float)(value / 100.0);
             textBox1.Text = percentage.ToString();
             pcxAfter = new ImgPcx(pcxBase);
-            pcxAfter.Transparency(pcxOrigin.pcxImg, percentage);
+            pcxAfter.Transparency(pcxOrigin, percentage);
             pictureBox2.Image = pcxAfter.pcxImg;
         }
 
@@ -83,7 +83,7 @@ namespace imageProcess
                 // 百分比轉成數值, trackBar只能用整數
                 trackBar1.Value = (int)(value * 100);
                 pcxAfter = new ImgPcx(pcxBase);
-                pcxAfter.Transparency(pcxOrigin.pcxImg, value);
+                pcxAfter.Transparency(pcxOrigin, value);
                 pictureBox2.Image = pcxAfter.pcxImg;
             }
         }

@@ -19,6 +19,8 @@
   - Watermark
 - Contrast Stretching
 - Histogram Equalization
+- Connected Component Analysis
+- Selection
 
 ## Filters
 - Outlier Filter
@@ -28,3 +30,10 @@
 - Highpass Filter
 - High-Boost Filter
 - Edge Crispening
+- Gradient
+  - Roberts Filter
+  - Sobel Filter
+  - Prewitt Filter
+
+## Coding
+- Huffman Coding

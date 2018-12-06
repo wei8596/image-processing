@@ -42,6 +42,8 @@ namespace imageProcess
                 pcxAfter = new ImgPcx(pcxGray);
                 pcxAfter.EdgeCrispening("mask1");
                 pictureBox2.Image = pcxAfter.pcxImg;
+                // 顯示SNR值 (到小數後2位)
+                textBox2.Text = pcxGray.GetSNR(pcxGray, pcxAfter).ToString("f2");
             }
         }
 
@@ -53,6 +55,8 @@ namespace imageProcess
                 pcxAfter = new ImgPcx(pcxGray);
                 pcxAfter.EdgeCrispening("mask2");
                 pictureBox2.Image = pcxAfter.pcxImg;
+                // 顯示SNR值 (到小數後2位)
+                textBox2.Text = pcxGray.GetSNR(pcxGray, pcxAfter).ToString("f2");
             }
         }
 
@@ -64,6 +68,8 @@ namespace imageProcess
                 pcxAfter = new ImgPcx(pcxGray);
                 pcxAfter.EdgeCrispening("mask3");
                 pictureBox2.Image = pcxAfter.pcxImg;
+                // 顯示SNR值 (到小數後2位)
+                textBox2.Text = pcxGray.GetSNR(pcxGray, pcxAfter).ToString("f2");
             }
         }
     }

@@ -1,8 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
+using System.Windows.Forms;
+using System.Windows.Forms.DataVisualization.Charting;
 
 namespace imageProcess
 {
@@ -771,26 +775,26 @@ namespace imageProcess
         /*
          * 回傳header資訊
          * 
-         * @return : header資訊字串
+         * @return : header資訊字串陣列
          */
-        public string PrintInfo()
+        public string[,] GetInfo()
         {
-            string info = "Manufacturer\t:\t" + head.manufacturer.ToString() + Environment.NewLine +
-                          "Version\t\t:\t" + head.version.ToString() + Environment.NewLine +
-                          "Encoding\t\t:\t" + head.encoding.ToString() + Environment.NewLine +
-                          "BitsPerPixel\t:\t" + head.bitsPerPixel.ToString() + Environment.NewLine +
-                          "xMin\t\t:\t" + head.xMin.ToString() + Environment.NewLine +
-                          "yMin\t\t:\t" + head.yMin.ToString() + Environment.NewLine +
-                          "xMax\t\t:\t" + head.xMax.ToString() + Environment.NewLine +
-                          "yMax\t\t:\t" + head.yMax.ToString() + Environment.NewLine +
-                          "hDpi\t\t:\t" + head.hDpi.ToString() + Environment.NewLine +
-                          "vDpi\t\t:\t" + head.vDpi.ToString() + Environment.NewLine +
-                          "Reserved\t\t:\t" + head.reserved.ToString() + Environment.NewLine +
-                          "NPlanes\t\t:\t" + head.nPlanes.ToString() + Environment.NewLine +
-                          "BytesPerLine\t:\t" + head.bytesPerLine.ToString() + Environment.NewLine +
-                          "PaletteInfo\t:\t" + head.paletteInfo.ToString() + Environment.NewLine +
-                          "HscreenSize\t:\t" + head.hScreen.ToString() + Environment.NewLine +
-                          "VscreenSize\t:\t" + head.vScreen.ToString();
+            string[,] info = { { "Manufacturer", head.manufacturer.ToString() },
+                               { "Version", head.version.ToString() },
+                               { "Encoding", head.encoding.ToString() },
+                               { "BitsPerPixel", head.bitsPerPixel.ToString() },
+                               { "xMin", head.xMin.ToString() },
+                               { "yMin", head.yMin.ToString() },
+                               { "xMax", head.xMax.ToString() },
+                               { "yMax", head.yMin.ToString() },
+                               { "hDpi", head.hDpi.ToString() },
+                               { "vDpi", head.vDpi.ToString() },
+                               { "Reserved", head.reserved.ToString() },
+                               { "NPlanes", head.nPlanes.ToString() },
+                               { "BytesPerLine", head.bytesPerLine.ToString() },
+                               { "PaletteInfo", head.paletteInfo.ToString() },
+                               { "HscreenSize", head.hScreen.ToString() },
+                               { "VscreenSize", head.vScreen.ToString() } };
             return info;
         }
 
@@ -1171,14 +1175,16 @@ namespace imageProcess
             double cos = Math.Cos(radians);
             double[,] rotation = new double[,] { { cos, sin }, { -sin, cos } }; // 旋轉矩陣
 
-            // 用頂點計算邊界
-            /*int[,] vertices = { { 0, 0 }, { 0, img.Width - 1 }, { img.Height - 1, 0 }, { img.Height - 1, img.Width - 1 } };
-            int[,] newVertices = new int[4, 2];
-            for(int i = 0; i < 4; ++i)
-            {
-                //newVertices[i, 0] = ;
-                //newVertices[i, 1] = ;
-            }*/
+            int oldHeight = head.height;
+            int oldWidth = head.width;
+            int oldRow_center = oldHeight / 2;
+            int oldCol_center = oldWidth / 2;
+
+            // 計算新的大小
+            int newHeight = (int)(oldWidth * Math.Abs(sin) + oldHeight * Math.Abs(cos));
+            int newWidth = (int)(oldHeight * Math.Abs(sin) + oldWidth * Math.Abs(cos));
+            int newRow_center = newHeight / 2;
+            int newCol_center = newWidth / 2;
 
             /*
              * 索引類型的圖片，其header有一個顏色表，這個表按照一定的規律存儲了所有的可能在這張圖片中出現的顏色。
@@ -1190,23 +1196,11 @@ namespace imageProcess
              * 並且在函數中指定新圖片的pixelFormat(不設置成索引類型)
              * 接下來就對新建的圖片進行操作
              */
-            // 建立空間較大的影像並轉換格式
-            Bitmap converted = new Bitmap(img.Width, img.Height, PixelFormat.Format24bppRgb);
-            // 使Bitmap預設為透明
-            //converted.MakeTransparent();
-            // 把原圖畫上去
-            Graphics g = Graphics.FromImage(converted);
-            g.DrawImage(img, 0, 0);
-            // 影像中心
-            int row_center = converted.Height / 2;
-            int col_center = converted.Width / 2;
-            // 畫出影像中心 test......................................................................
-            //SolidBrush brush = new SolidBrush(Color.Blue);
-            //g.FillRectangle(brush, col_center, row_center, 10, 10);
-
+            // 複製原始影像並轉換格式
+            Bitmap converted = img.Clone(new Rectangle(0, 0, img.Width, img.Height), PixelFormat.Format24bppRgb);
             // 鎖定影像內容到記憶體
             // 將圖的資料存到記憶體, 可以直接對它操作
-            BitmapData data = converted.LockBits(new Rectangle(0, 0, converted.Width, converted.Height), ImageLockMode.ReadWrite, converted.PixelFormat);
+            BitmapData data = converted.LockBits(new Rectangle(0, 0, converted.Width, converted.Height), ImageLockMode.ReadOnly, converted.PixelFormat);
             // Stride - 影像scan的寬度
             byte[] bytes = new byte[data.Stride * data.Height]; // 存放整個圖像資料
             // 將圖像資料複製到陣列
@@ -1214,37 +1208,54 @@ namespace imageProcess
             // Scan0 - 影像資料的起始位置
             Marshal.Copy(data.Scan0, bytes, 0, bytes.Length);
 
-            byte[] rotate_bytes = new byte[data.Stride * data.Height]; // 存放旋轉後的資料
+            // 建立空間較大的影像並轉換格式
+            Bitmap rotate = new Bitmap(newWidth, newHeight, PixelFormat.Format24bppRgb);
+            // 鎖定影像內容到記憶體
+            // 將圖的資料存到記憶體, 可以直接對它操作
+            BitmapData rotateData = rotate.LockBits(new Rectangle(0, 0, rotate.Width, rotate.Height), ImageLockMode.ReadWrite, rotate.PixelFormat);
+            // Stride - 影像scan的寬度
+            byte[] rotate_bytes = new byte[rotateData.Stride * rotateData.Height]; // 存放旋轉後的資料
+            // 將圖像資料複製到陣列
+            // Marshal.Copy(srcPtr, dst, startIndex, length)
+            // Scan0 - 影像資料的起始位置
+            Marshal.Copy(rotateData.Scan0, rotate_bytes, 0, rotate_bytes.Length);
 
-            int height = head.height;
-            int width = head.bytesPerLine;
-            for (int row = 0; row < head.height; ++row)
+            int offset = data.Stride - converted.Width * 3; // 掃描寬度與顯示寬度的間隙, Stride為大於等於Width的最小4的整數倍
+            int index = 0;
+            int newOffset = rotateData.Stride - rotate.Width * 3;
+            for (int row = 0; row < oldHeight; ++row)
             {
-                for (int col = 0; col < head.width; ++col)
+                for (int col = 0; col < oldWidth; ++col)
                 {
                     // 計算旋轉後對應的座標
                     // Round() : 四捨五入為最接近的整數
-                    int newRow = (int)Math.Round(rotation[0, 0] * (row - row_center) + rotation[0, 1] * (col - col_center)) + row_center;
-                    int newCol = (int)Math.Round(rotation[1, 0] * (row - row_center) + rotation[1, 1] * (col - col_center)) + col_center;
-                    if (newRow < 0 || newCol < 0 || newRow > height - 1 || newCol > width - 1)
+                    int newRow = (int)Math.Round(rotation[0, 0] * (row - oldRow_center) + rotation[0, 1] * (col - oldCol_center)) + newRow_center;
+                    int newCol = (int)Math.Round(rotation[1, 0] * (row - oldRow_center) + rotation[1, 1] * (col - oldCol_center)) + newCol_center;
+                    if (newRow < 0 || newCol < 0 || newRow > newHeight - 1 || newCol > newWidth - 1)
                     {
                         continue;
                     }
-                    int oldIndex = 3 * (row * width + col);
-                    int newIndex = 3 * (newRow * width + newCol);
-                    rotate_bytes[newIndex] = bytes[oldIndex];
-                    rotate_bytes[newIndex + 1] = bytes[oldIndex + 1];
-                    rotate_bytes[newIndex + 2] = bytes[oldIndex + 2];
+                    else
+                    {
+                        int newIndex = 3 * (newRow * newWidth + newCol);
+                        newIndex += newRow * newOffset; // 加上前面每列的offset
+                        rotate_bytes[newIndex] = bytes[index];
+                        rotate_bytes[newIndex + 1] = bytes[index + 1];
+                        rotate_bytes[newIndex + 2] = bytes[index + 2];
+                    }
+                    index += 3;
                 }
+                index += offset; // 將index移過那段間隙
             }
 
             // 將資料複製到圖像物件
             // Marshal.Copy(src, startIndex, dstPtr, length)
             // Scan0 - 影像資料的起始位置
-            Marshal.Copy(rotate_bytes, 0, data.Scan0, rotate_bytes.Length);
+            Marshal.Copy(rotate_bytes, 0, rotateData.Scan0, rotate_bytes.Length);
             // 解除鎖定記憶體
             converted.UnlockBits(data);
-            img = converted;
+            rotate.UnlockBits(rotateData);
+            img = rotate;
         }
 
         /*
@@ -1267,14 +1278,16 @@ namespace imageProcess
             double cos = Math.Cos(radians);
             double[,] rotation = new double[,] { { cos, sin }, { -sin, cos } }; // 旋轉矩陣
 
-            // 用頂點計算邊界
-            /*int[,] vertices = { { 0, 0 }, { 0, img.Width - 1 }, { img.Height - 1, 0 }, { img.Height - 1, img.Width - 1 } };
-            int[,] newVertices = new int[4, 2];
-            for (int i = 0; i < 4; ++i)
-            {
-                //newVertices[i, 0] = ;
-                //newVertices[i, 1] = ;
-            }*/
+            int oldHeight = head.height;
+            int oldWidth = head.width;
+            int oldRow_center = oldHeight / 2;
+            int oldCol_center = oldWidth / 2;
+
+            // 計算新的大小
+            int newHeight = (int)(oldWidth * Math.Abs(sin) + oldHeight * Math.Abs(cos));
+            int newWidth = (int)(oldHeight * Math.Abs(sin) + oldWidth * Math.Abs(cos));
+            int newRow_center = newHeight / 2;
+            int newCol_center = newWidth / 2;
 
             /*
              * 索引類型的圖片，其header有一個顏色表，這個表按照一定的規律存儲了所有的可能在這張圖片中出現的顏色。
@@ -1286,23 +1299,11 @@ namespace imageProcess
              * 並且在函數中指定新圖片的pixelFormat(不設置成索引類型)
              * 接下來就對新建的圖片進行操作
              */
-            // 建立空間較大的影像並轉換格式
-            Bitmap converted = new Bitmap(img.Width, img.Height, PixelFormat.Format24bppRgb);
-            // 使Bitmap預設為透明
-            //converted.MakeTransparent();
-            // 把原圖畫上去
-            Graphics g = Graphics.FromImage(converted);
-            g.DrawImage(img, 0, 0);
-            // 影像中心
-            int row_center = converted.Height / 2;
-            int col_center = converted.Width / 2;
-            // 畫出影像中心 test......................................................................
-            //SolidBrush brush = new SolidBrush(Color.Blue);
-            //g.FillRectangle(brush, col_center, row_center, 10, 10);
-
+            // 複製原始影像並轉換格式
+            Bitmap converted = img.Clone(new Rectangle(0, 0, img.Width, img.Height), PixelFormat.Format24bppRgb);
             // 鎖定影像內容到記憶體
             // 將圖的資料存到記憶體, 可以直接對它操作
-            BitmapData data = converted.LockBits(new Rectangle(0, 0, converted.Width, converted.Height), ImageLockMode.ReadWrite, converted.PixelFormat);
+            BitmapData data = converted.LockBits(new Rectangle(0, 0, converted.Width, converted.Height), ImageLockMode.ReadOnly, converted.PixelFormat);
             // Stride - 影像scan的寬度
             byte[] bytes = new byte[data.Stride * data.Height]; // 存放整個圖像資料
             // 將圖像資料複製到陣列
@@ -1310,37 +1311,54 @@ namespace imageProcess
             // Scan0 - 影像資料的起始位置
             Marshal.Copy(data.Scan0, bytes, 0, bytes.Length);
 
-            byte[] rotate_bytes = new byte[data.Stride * data.Height]; // 存放旋轉後的資料
+            // 建立空間較大的影像並轉換格式
+            Bitmap rotate = new Bitmap(newWidth, newHeight, PixelFormat.Format24bppRgb);
+            // 鎖定影像內容到記憶體
+            // 將圖的資料存到記憶體, 可以直接對它操作
+            BitmapData rotateData = rotate.LockBits(new Rectangle(0, 0, rotate.Width, rotate.Height), ImageLockMode.ReadWrite, rotate.PixelFormat);
+            // Stride - 影像scan的寬度
+            byte[] rotate_bytes = new byte[rotateData.Stride * rotateData.Height]; // 存放旋轉後的資料
+            // 將圖像資料複製到陣列
+            // Marshal.Copy(srcPtr, dst, startIndex, length)
+            // Scan0 - 影像資料的起始位置
+            Marshal.Copy(rotateData.Scan0, rotate_bytes, 0, rotate_bytes.Length);
 
-            int height = head.height;
-            int width = head.bytesPerLine;
-            for (int row = 0; row < head.height; ++row)
+            int offset = rotateData.Stride - rotate.Width * 3; // 掃描寬度與顯示寬度的間隙, Stride為大於等於Width的最小4的整數倍
+            int index = 0;
+            for (int row = 0; row < newHeight; ++row)
             {
-                for (int col = 0; col < head.width; ++col)
+                for (int col = 0; col < newWidth; ++col)
                 {
                     // 計算旋轉後對應的座標
                     // Round() : 四捨五入為最接近的整數
-                    int mapRow = (int)Math.Round(rotation[0, 0] * (row - row_center) + rotation[0, 1] * (col - col_center)) + row_center;
-                    int mapCol = (int)Math.Round(rotation[1, 0] * (row - row_center) + rotation[1, 1] * (col - col_center)) + col_center;
-                    if (mapRow < 0 || mapCol < 0 || mapRow > head.height - 1 || mapCol > head.width - 1)
+                    int oldRow = (int)Math.Round(rotation[0, 0] * (row - newRow_center) + rotation[0, 1] * (col - newCol_center)) + oldRow_center;
+                    int oldCol = (int)Math.Round(rotation[1, 0] * (row - newRow_center) + rotation[1, 1] * (col - newCol_center)) + oldCol_center;
+                    int oldIndex = 3 * (oldRow * head.bytesPerLine + oldCol);
+                    if (oldRow < 0 || oldCol < 0 || oldRow > oldHeight - 1 || oldCol > oldWidth - 1)
                     {
-                        continue;
+                        rotate_bytes[index] = 0;
+                        rotate_bytes[index + 1] = 0;
+                        rotate_bytes[index + 2] = 0;
                     }
-                    int oldIndex = 3 * (mapRow * width + mapCol);
-                    int newIndex = 3 * (row * width + col);
-                    rotate_bytes[newIndex] = bytes[oldIndex];
-                    rotate_bytes[newIndex + 1] = bytes[oldIndex + 1];
-                    rotate_bytes[newIndex + 2] = bytes[oldIndex + 2];
+                    else
+                    {
+                        rotate_bytes[index] = bytes[oldIndex];
+                        rotate_bytes[index + 1] = bytes[oldIndex + 1];
+                        rotate_bytes[index + 2] = bytes[oldIndex + 2];
+                    }
+                    index += 3;
                 }
+                index += offset; // 將index移過那段間隙
             }
 
             // 將資料複製到圖像物件
             // Marshal.Copy(src, startIndex, dstPtr, length)
             // Scan0 - 影像資料的起始位置
-            Marshal.Copy(rotate_bytes, 0, data.Scan0, rotate_bytes.Length);
+            Marshal.Copy(rotate_bytes, 0, rotateData.Scan0, rotate_bytes.Length);
             // 解除鎖定記憶體
             converted.UnlockBits(data);
-            img = converted;
+            rotate.UnlockBits(rotateData);
+            img = rotate;
         }
 
         /*
@@ -2052,7 +2070,7 @@ namespace imageProcess
                     bytes[index + 2] = (byte)(t * coverBytes[coverIndex + 2] + p * bytes[index + 2]);
                     index += 3;
                 }
-                index += offset;
+                index += offset; // 將index移過那段間隙
             }
 
             // 將資料複製到圖像物件
@@ -2102,57 +2120,39 @@ namespace imageProcess
         }
 
         /*
-         * 取得Gray code
+         * 轉換成Gray code
          * 
-         * @return : Gray code陣列
+         * @return : Gray code
          */
-        public byte[] GetGrayCode()
+        public byte GrayCode(byte n)
         {
-            string[] gray = new string[256]; // 2^8 (8 bits)
-            // 從1-bit開始
-            gray[0] = "0";
-            gray[1] = "1";
-            int index = 2;
-            // 每次迴圈從前一次的i個產生2 * i個
-            for(int i = 2; i < 256; i *= 2)
+            return (byte)(n ^ (n >> 1));
+        }
+
+        /*
+         * 反轉換Gray code
+         * 
+         * @return : binary code
+         */
+        public byte InverseGrayCode(byte n)
+        {
+            byte inv = 0;
+            while(n != 0)
             {
-                // 取前一次產生的反向加入
-                for(int j = i-1; j >= 0; --j)
-                {
-                    gray[index] = gray[j];
-                    ++index;
-                }
-
-                // 前半前面補0
-                for(int j = 0; j < i; ++j)
-                {
-                    gray[j] = "0" + gray[j];
-                }
-
-                // 後半前面補0
-                for (int j = i; j < 2 * i; ++j)
-                {
-                    gray[j] = "1" + gray[j];
-                }
+                inv ^= n;
+                n = (byte)(n >> 1);
             }
-
-            // 將bit string轉成byte數值
-            byte[] num = new byte[8];
-            for(int i = 1, j = 0; i <= 128; i *= 2, ++j)
-            {
-                num[j] = BitStringToByte(gray[i]);
-            }
-
-            return num;
+            return inv;
         }
 
         /*
          * Bit-plane slicing
          * @n : 指定不同的Bit-plane (2^7 ~ 2^0)
+         * @option : 指定使用binary或Gray code
          * 
          * @return : Bit-plane圖像
          */
-        public Bitmap BitPlane(byte n)
+        public Bitmap BitPlane(byte n, string option)
         {
             /*
              * 索引類型的圖片，其header有一個顏色表，這個表按照一定的規律存儲了所有的可能在這張圖片中出現的顏色。
@@ -2186,21 +2186,39 @@ namespace imageProcess
             {
                 for(int x = 0; x < width; ++x)
                 {
-                    if ((n & bytes[index]) == n)
+                    if(option == "binary")
                     {
-                        bytes[index] = max;
-                        bytes[index + 1] = max;
-                        bytes[index + 2] = max;
+                        if ((n & bytes[index]) == n)
+                        {
+                            bytes[index] = max;
+                            bytes[index + 1] = max;
+                            bytes[index + 2] = max;
+                        }
+                        else
+                        {
+                            bytes[index] = min;
+                            bytes[index + 1] = min;
+                            bytes[index + 2] = min;
+                        }
                     }
-                    else
+                    else if(option == "Gray")
                     {
-                        bytes[index] = min;
-                        bytes[index + 1] = min;
-                        bytes[index + 2] = min;
+                        if ((n & GrayCode(bytes[index])) == n)
+                        {
+                            bytes[index] = max;
+                            bytes[index + 1] = max;
+                            bytes[index + 2] = max;
+                        }
+                        else
+                        {
+                            bytes[index] = min;
+                            bytes[index + 1] = min;
+                            bytes[index + 2] = min;
+                        }
                     }
                     index += 3;
                 }
-                index += offset;
+                index += offset; // 將index移過那段間隙
             }
 
             // 將資料複製到圖像物件
@@ -2216,8 +2234,9 @@ namespace imageProcess
         /*
          * 增加浮水印
          * @mark : 浮水印圖片
+         * @option : 指定使用binary或Gray code
          */
-        public void Watermark(ImgPcx mark)
+        public void Watermark(ImgPcx mark, string option)
         {
             /*
              * 索引類型的圖片，其header有一個顏色表，這個表按照一定的規律存儲了所有的可能在這張圖片中出現的顏色。
@@ -2253,7 +2272,7 @@ namespace imageProcess
             // Scan0 - 影像資料的起始位置
             Marshal.Copy(markData.Scan0, markBytes, 0, markBytes.Length);
 
-            // 修改後面4個bits來加入浮水印
+            // 將浮水印的前4個bits加入原圖的後面4個bits
             int offset = data.Stride - converted.Width * 3; // 掃描寬度與顯示寬度的間隙
             int index = 0;
             int height = Math.Min(head.height, mark.head.height);
@@ -2262,25 +2281,35 @@ namespace imageProcess
             {
                 for (int x = 0; x < width; ++x)
                 {
-                    // F0 = 1111 0000
-                    // F  = 0000 1111
-                    bytes[index] &= 0xF0;
-                    bytes[index + 1] &= 0xF0;
-                    bytes[index + 2] &= 0xF0;
-                    bytes[index] += (byte)(0xF & markBytes[index]);
-                    bytes[index + 1] += (byte)(0xF & markBytes[index + 1]);
-                    bytes[index + 2] += (byte)(0xF & markBytes[index + 2]);
+                    if(option == "binary")
+                    {
+                        // F0 = 1111 0000
+                        bytes[index] &= 0xF0;
+                        bytes[index + 1] &= 0xF0;
+                        bytes[index + 2] &= 0xF0;
+                        // 取浮水印的前4個bits
+                        bytes[index] += (byte)(markBytes[index] >> 4);
+                        bytes[index + 1] += (byte)(markBytes[index + 1] >> 4);
+                        bytes[index + 2] += (byte)(markBytes[index + 2] >> 4);
+                    }
+                    else if(option == "Gray")
+                    {
+                        // F0 = 1111 0000
+                        byte tmp = (byte)(GrayCode(bytes[index]) & 0xF0);
+                        // 取浮水印的前4個bits
+                        tmp += (byte)(GrayCode(markBytes[index]) >> 4);
+                        bytes[index] = InverseGrayCode(tmp);
+                        tmp = (byte)(GrayCode(bytes[index + 1]) & 0xF0);
+                        tmp += (byte)(GrayCode(markBytes[index + 1]) >> 4);
+                        bytes[index + 1] = InverseGrayCode(tmp);
+                        tmp = (byte)(GrayCode(bytes[index + 2]) & 0xF0);
+                        tmp += (byte)(GrayCode(markBytes[index + 2]) >> 4);
+                        bytes[index + 2] = InverseGrayCode(tmp);
+                    }
                     index += 3;
                 }
-                index += offset;
+                index += offset; // 將index移過那段間隙
             }
-            /*for (int i = 0; i < markBytes.Length; ++i)
-            {
-                // F0 = 1111 0000
-                // F  = 0000 1111
-                bytes[i] &= 0xF0;
-                bytes[i] += (byte)(0xF & markBytes[i]);
-            }*/
 
             // 將資料複製到圖像物件
             // Marshal.Copy(src, startIndex, dstPtr, length)
@@ -2294,9 +2323,12 @@ namespace imageProcess
 
         /*
          * Contrast Stretching
+         * 對比度拉伸, 繪製函數圖表, 設定文字方塊內容
          * @n : 統計直方圖
+         * @chart : 函數圖表
+         * @box1 : 文字方塊
          */
-        public void ContrastStretch(double[] n)
+        public void ContrastStretch(double[] n, Chart chart, TextBox box1, TextBox box2, TextBox box3, TextBox box4)
         {
             /*
              * 索引類型的圖片，其header有一個顏色表，這個表按照一定的規律存儲了所有的可能在這張圖片中出現的顏色。
@@ -2320,7 +2352,7 @@ namespace imageProcess
             // Scan0 - 影像資料的起始位置
             Marshal.Copy(data.Scan0, bytes, 0, bytes.Length);
 
-            // 原圖最大最小值
+            // 找原圖最大最小值
             double min = 0, max = 255;
             for (int i = 0; i < 256; ++i)
             {
@@ -2364,6 +2396,130 @@ namespace imageProcess
             // 解除鎖定記憶體
             converted.UnlockBits(data);
             img = converted;
+
+            // 繪製函數圖表
+            chart.Series.Clear(); // 清除圖表資料
+            chart.Size = new Size(chart.Width, converted.Height); // 設定圖表的高度與圖片相同
+            chart.ChartAreas[0].AxisX.IntervalType = DateTimeIntervalType.Number;
+            chart.ChartAreas[0].AxisX.LabelStyle.Format = "";
+            chart.ChartAreas[0].AxisY.LabelStyle.Format = "";
+            chart.ChartAreas[0].AxisX.Minimum = 0;
+            chart.ChartAreas[0].AxisX.Maximum = 255;
+            chart.ChartAreas[0].AxisY.Minimum = 0;
+            chart.ChartAreas[0].AxisY.Maximum = 255;
+            chart.Series.Add("Piecewise");
+            chart.Series["Piecewise"].ChartType = SeriesChartType.Line;
+            chart.Series["Piecewise"].Color = Color.Red;
+            int y;
+            bool first = true;
+            int x1 = 0, x2 = 0;
+            for(int x = 0; x < 256; ++x)
+            {
+                y = (int)(Math.Round(x - min) * scale);
+                if(y < 0)
+                {
+                    y = 0;
+                    x1 = x;
+                }
+                else if(y > 255)
+                {
+                    y = 255;
+                    if(first)
+                    {
+                        x2 = x;
+                        first = false;
+                    }
+                }
+                chart.Series["Piecewise"].Points.AddXY(x, y);
+            }
+            box1.Text = x1.ToString();
+            box2.Text = "0";
+            box3.Text = x2.ToString();
+            box4.Text = "255";
+        }
+
+        /*
+         * Piecewise Linear (對比度做分段線性拉伸)
+         * @chart : 函數圖表
+         * @x, y : xy座標
+         */
+        public void PiecewiseLinear(Chart chart, int x1, int y1, int x2, int y2)
+        {
+            /*
+             * 索引類型的圖片，其header有一個顏色表，這個表按照一定的規律存儲了所有的可能在這張圖片中出現的顏色。
+             * 它的每一個點的像素值(ARGB)並不是直接存儲的。在存儲具體點的數據的地方之只是存儲其在顏色表中的索引，
+             * 在進行的解碼的時候，讀取索引然後在顏色表中查找，找到對應所以的顏色值之後將其顯示出來作為這個點的顏色值。
+             * System.Drawing.Image不支援通過索引的方式存儲圖片資料的圖片實現SetPixel()
+             * 
+             * 可以通過Bitmap.Clone()來將索引圖片的像素資料複製到新建的圖片上，
+             * 並且在函數中指定新圖片的pixelFormat(不設置成索引類型)
+             * 接下來就對新建的圖片進行操作
+             */
+            // 複製原始影像並轉換格式
+            Bitmap converted = img.Clone(new Rectangle(0, 0, img.Width, img.Height), PixelFormat.Format24bppRgb);
+            // 鎖定影像內容到記憶體
+            // 將圖的資料存到記憶體, 可以直接對它操作
+            BitmapData data = converted.LockBits(new Rectangle(0, 0, converted.Width, converted.Height), ImageLockMode.ReadWrite, converted.PixelFormat);
+            // Stride - 影像scan的寬度
+            byte[] bytes = new byte[data.Stride * data.Height]; // 存放整個圖像資料
+            // 將圖像資料複製到陣列
+            // Marshal.Copy(srcPtr, dst, startIndex, length)
+            // Scan0 - 影像資料的起始位置
+            Marshal.Copy(data.Scan0, bytes, 0, bytes.Length);
+
+            for (int i = 0; i < bytes.Length; ++i)
+            {
+                if(bytes[i] < x1)       // 0 <= bytes[i] < x1
+                {
+                    bytes[i] = (byte)(bytes[i] * y1 / x1);
+                }
+                else if(bytes[i] < x2)  // x1 <= bytes[i] < x2
+                {
+                    bytes[i] = (byte)(((y2 - y1) / (x2 - x1)) * (bytes[i] - x1) + y1);
+                }
+                else                    // x2 <= bytes[i] <= 255
+                {
+                    bytes[i] = (byte)(((255 - y2) / (255 - x2)) * (bytes[i] - x2) + y2);
+                }
+            }
+
+            // 將資料複製到圖像物件
+            // Marshal.Copy(src, startIndex, dstPtr, length)
+            // Scan0 - 影像資料的起始位置
+            Marshal.Copy(bytes, 0, data.Scan0, bytes.Length);
+            // 解除鎖定記憶體
+            converted.UnlockBits(data);
+            img = converted;
+
+            // 繪製函數圖表
+            chart.Series.Clear(); // 清除圖表資料
+            chart.ChartAreas[0].AxisX.IntervalType = DateTimeIntervalType.Number;
+            chart.ChartAreas[0].AxisX.LabelStyle.Format = "";
+            chart.ChartAreas[0].AxisY.LabelStyle.Format = "";
+            chart.ChartAreas[0].AxisX.Minimum = 0;
+            chart.ChartAreas[0].AxisX.Maximum = 255;
+            chart.ChartAreas[0].AxisY.Minimum = 0;
+            chart.ChartAreas[0].AxisY.Maximum = 255;
+            chart.Series.Add("Piecewise");
+            chart.Series["Piecewise"].ChartType = SeriesChartType.Line;
+            chart.Series["Piecewise"].Color = Color.Red;
+            int y = 0;
+            for (int x = 0; x < 256; ++x)
+            {
+                if (x < x1)         // 0 <= x < x1
+                {
+                    y = (byte)(x * y1 / x1);
+                }
+                else if (x < x2)    // x1 <= x < x2
+                {
+                    y = (byte)(((y2 - y1) / (x2 - x1)) * (x - x1) + y1);
+                }
+                else                // x2 <= x <= 255
+                {
+                    y = (byte)(((255 - y2) / (255 - x2)) * (x - x2) + y2);
+                }
+                chart.Series["Piecewise"].Points.AddXY(x, y);
+            }
         }
 
         /*
@@ -2413,6 +2569,67 @@ namespace imageProcess
             // 解除鎖定記憶體
             converted.UnlockBits(data);
             img = converted;
+        }
+
+        /*
+         * 取得訊號雜訊比(SNR)
+         * @pcxOrigin : 原始影像物件
+         * @pcxAfter : 處理後影像物件
+         * 
+         * @return : SNR值
+         */
+        public double GetSNR(ImgPcx pcxOrigin, ImgPcx pcxAfter)
+        {
+            // 複製原始影像並轉換格式
+            Bitmap converted = pcxOrigin.pcxImg.Clone(new Rectangle(0, 0, pcxOrigin.pcxImg.Width, pcxOrigin.pcxImg.Height), PixelFormat.Format24bppRgb);
+            // 鎖定影像內容到記憶體
+            // 將圖的資料存到記憶體, 可以直接對它操作
+            BitmapData data = converted.LockBits(new Rectangle(0, 0, converted.Width, converted.Height), ImageLockMode.ReadWrite, converted.PixelFormat);
+            // Stride - 影像scan的寬度
+            byte[] bytes = new byte[data.Stride * data.Height]; // 存放整個圖像資料
+            // 將圖像資料複製到陣列
+            // Marshal.Copy(srcPtr, dst, startIndex, length)
+            // Scan0 - 影像資料的起始位置
+            Marshal.Copy(data.Scan0, bytes, 0, bytes.Length);
+
+            // 複製處理後影像並轉換格式
+            Bitmap after_converted = pcxAfter.pcxImg.Clone(new Rectangle(0, 0, pcxAfter.pcxImg.Width, pcxAfter.pcxImg.Height), PixelFormat.Format24bppRgb);
+            // 鎖定影像內容到記憶體
+            // 將圖的資料存到記憶體, 可以直接對它操作
+            BitmapData afterData = after_converted.LockBits(new Rectangle(0, 0, after_converted.Width, after_converted.Height), ImageLockMode.ReadWrite, after_converted.PixelFormat);
+            // Stride - 影像scan的寬度
+            byte[] afterBytes = new byte[afterData.Stride * afterData.Height]; // 存放整個圖像資料
+            // 將圖像資料複製到陣列
+            // Marshal.Copy(srcPtr, dst, startIndex, length)
+            // Scan0 - 影像資料的起始位置
+            Marshal.Copy(afterData.Scan0, afterBytes, 0, afterBytes.Length);
+
+            int offset = data.Stride - converted.Width * 3; // 掃描寬度與顯示寬度的間隙
+            int index = 0;
+            int height = converted.Height;
+            int width = converted.Width;
+            double b1, g1, r1, b2, g2, r2;
+            double signal = 0, noise = 0;
+            for (int y = 0; y < height; ++y)
+            {
+                for (int x = 0; x < width; ++x)
+                {
+                    b1 = bytes[index];
+                    g1 = bytes[index + 1];
+                    r1 = bytes[index + 2];
+                    b2 = afterBytes[index];
+                    g2 = afterBytes[index + 1];
+                    r2 = afterBytes[index + 2];
+                    signal += b1 * b1 + g1 * g1 + r1 * r1;
+                    noise += (b1 - b2) * (b1 - b2) +
+                             (g1 - g2) * (g1 - g2) +
+                             (r1 - r2) * (r1 - r2);
+                    index += 3;
+                }
+                index += offset; // 將index移過那段間隙
+            }
+
+            return 10 * Math.Log10(signal / noise); // SNR
         }
 
         /*
@@ -2479,12 +2696,12 @@ namespace imageProcess
                 }
             }
             // Outlier
+            byte[] pixel = new byte[8];
             int newIndex = 0;
             for (int y = 1; y < height - 1; ++y)
             {
                 for (int x = 1; x < width - 1; ++x)
                 {
-                    byte[] pixel = new byte[8];
                     pixel[0] = extend_bytes[3 * ((y - 1) * width + x - 1)];
                     pixel[1] = extend_bytes[3 * ((y - 1) * width + x)];
                     pixel[2] = extend_bytes[3 * ((y - 1) * width + x + 1)];
@@ -2500,7 +2717,7 @@ namespace imageProcess
                     }
                     double avg = sum / 8.0;
                     int index = 3 * (y * width + x);
-                    byte threshold = 50; // 設多少?????????????????
+                    byte threshold = 10; // 設多少?????????????????
                     if (extend_bytes[index] - avg > threshold)
                     {
                         bytes[newIndex] = (byte)avg;
@@ -2584,12 +2801,12 @@ namespace imageProcess
                 }
             }
             // Median
+            byte[] pixel = new byte[9];
             int newIndex = 0;
             for (int y = 1; y < height - 1; ++y)
             {
                 for (int x = 1; x < width - 1; ++x)
                 {
-                    byte[] pixel = new byte[9];
                     pixel[0] = extend_bytes[3 * ((y - 1) * width + x - 1)];
                     pixel[1] = extend_bytes[3 * ((y - 1) * width + x)];
                     pixel[2] = extend_bytes[3 * ((y - 1) * width + x + 1)];
@@ -2766,12 +2983,12 @@ namespace imageProcess
                 }
             }
             // Pseudo Median
+            byte[] pixel = new byte[9];
             int newIndex = 0;
             for (int y = 1; y < height - 1; ++y)
             {
                 for (int x = 1; x < width - 1; ++x)
                 {
-                    byte[] pixel = new byte[9];
                     pixel[0] = extend_bytes[3 * ((y - 1) * width + x - 1)];
                     pixel[1] = extend_bytes[3 * ((y - 1) * width + x)];
                     pixel[2] = extend_bytes[3 * ((y - 1) * width + x + 1)];
@@ -2862,13 +3079,12 @@ namespace imageProcess
                 }
             }
             // Lowpass
+            byte[] pixel = new byte[9]; // mask size = 3 x 3 = 9
             int newIndex = 0;
             for (int y = 1; y < height - 1; ++y)
             {
                 for (int x = 1; x < width - 1; ++x)
                 {
-                    // mask size = 3 x 3 = 9
-                    byte[] pixel = new byte[9];
                     pixel[0] = extend_bytes[3 * ((y - 1) * width + x - 1)];
                     pixel[1] = extend_bytes[3 * ((y - 1) * width + x)];
                     pixel[2] = extend_bytes[3 * ((y - 1) * width + x + 1)];
@@ -2964,13 +3180,12 @@ namespace imageProcess
                 }
             }
             // Highpass
+            byte[] pixel = new byte[9]; // mask size = 3 x 3 = 9
             int newIndex = 0;
             for (int y = 1; y < height - 1; ++y)
             {
                 for (int x = 1; x < width - 1; ++x)
                 {
-                    // mask size = 3 x 3 = 9
-                    byte[] pixel = new byte[9];
                     pixel[0] = extend_bytes[3 * ((y - 1) * width + x - 1)];
                     pixel[1] = extend_bytes[3 * ((y - 1) * width + x)];
                     pixel[2] = extend_bytes[3 * ((y - 1) * width + x + 1)];
@@ -3076,13 +3291,12 @@ namespace imageProcess
                 }
             }
             // High-Boost
+            byte[] pixel = new byte[9]; // mask size = 3 x 3 = 9
             int newIndex = 0;
             for (int y = 1; y < height - 1; ++y)
             {
                 for (int x = 1; x < width - 1; ++x)
                 {
-                    // mask size = 3 x 3 = 9
-                    byte[] pixel = new byte[9];
                     pixel[0] = extend_bytes[3 * ((y - 1) * width + x - 1)];
                     pixel[1] = extend_bytes[3 * ((y - 1) * width + x)];
                     pixel[2] = extend_bytes[3 * ((y - 1) * width + x + 1)];
@@ -3187,13 +3401,12 @@ namespace imageProcess
                 }
             }
             // Edge Crispening
+            byte[] pixel = new byte[9]; // mask size = 3 x 3 = 9
             int newIndex = 0;
             for (int y = 1; y < height - 1; ++y)
             {
                 for (int x = 1; x < width - 1; ++x)
                 {
-                    // mask size = 3 x 3 = 9
-                    byte[] pixel = new byte[9];
                     pixel[0] = extend_bytes[3 * ((y - 1) * width + x - 1)];
                     pixel[1] = extend_bytes[3 * ((y - 1) * width + x)];
                     pixel[2] = extend_bytes[3 * ((y - 1) * width + x + 1)];
@@ -3251,6 +3464,625 @@ namespace imageProcess
                     bytes[newIndex + 2] = value;
                     newIndex += 3;
                 }
+            }
+
+            // 將資料複製到圖像物件
+            // Marshal.Copy(src, startIndex, dstPtr, length)
+            // Scan0 - 影像資料的起始位置
+            Marshal.Copy(bytes, 0, data.Scan0, bytes.Length);
+            // 解除鎖定記憶體
+            converted.UnlockBits(data);
+            img = converted;
+        }
+
+        /*
+         * Roberts Filter
+         * @option : 選擇垂直, 水平或兩者
+         */
+        public void Roberts(string option)
+        {
+            /*
+             * 索引類型的圖片，其header有一個顏色表，這個表按照一定的規律存儲了所有的可能在這張圖片中出現的顏色。
+             * 它的每一個點的像素值(ARGB)並不是直接存儲的。在存儲具體點的數據的地方之只是存儲其在顏色表中的索引，
+             * 在進行的解碼的時候，讀取索引然後在顏色表中查找，找到對應所以的顏色值之後將其顯示出來作為這個點的顏色值。
+             * System.Drawing.Image不支援通過索引的方式存儲圖片資料的圖片實現SetPixel()
+             * 
+             * 可以通過Bitmap.Clone()來將索引圖片的像素資料複製到新建的圖片上，
+             * 並且在函數中指定新圖片的pixelFormat(不設置成索引類型)
+             * 接下來就對新建的圖片進行操作
+             */
+            // 複製原始影像並轉換格式
+            Bitmap converted = img.Clone(new Rectangle(0, 0, img.Width, img.Height), PixelFormat.Format24bppRgb);
+            // 鎖定影像內容到記憶體
+            // 將圖的資料存到記憶體, 可以直接對它操作
+            BitmapData data = converted.LockBits(new Rectangle(0, 0, converted.Width, converted.Height), ImageLockMode.ReadWrite, converted.PixelFormat);
+            // Stride - 影像scan的寬度
+            byte[] bytes = new byte[data.Stride * data.Height]; // 存放整個圖像資料
+            // 將圖像資料複製到陣列
+            // Marshal.Copy(srcPtr, dst, startIndex, length)
+            // Scan0 - 影像資料的起始位置
+            Marshal.Copy(data.Scan0, bytes, 0, bytes.Length);
+
+            // 右與下增加一排, 利用周圍的值填補
+            byte[] extend_bytes = new byte[3 * (head.bytesPerLine + 1) * (head.height + 1)];
+            int height = head.height + 1;
+            int width = head.bytesPerLine + 1;
+            int mapHeight = head.height;
+            int mapWidth = head.bytesPerLine;
+            int mapX = 0, mapY = 0;
+            for (int y = 0; y < height; ++y)
+            {
+                for (int x = 0; x < width; ++x)
+                {
+                    int index = 3 * (y * width + x);
+                    mapX = x;
+                    mapY = y;
+                    if (x == width - 1)
+                    {
+                        mapX = mapWidth - 1;
+                    }
+                    if (y == height - 1)
+                    {
+                        mapY = mapHeight - 1;
+                    }
+                    int mapIndex = 3 * (mapY * mapWidth + mapX);
+                    extend_bytes[index] = bytes[mapIndex];
+                    extend_bytes[index + 1] = bytes[mapIndex + 1];
+                    extend_bytes[index + 2] = bytes[mapIndex + 2];
+                }
+            }
+            // Roberts Operator
+            byte[] pixel = new byte[4]; // mask size = 2 x 2 = 4
+            int newIndex = 0;
+            for (int y = 0; y < height - 1; ++y)
+            {
+                for (int x = 0; x < width - 1; ++x)
+                {
+                    pixel[0] = extend_bytes[3 * (y * width + x)];
+                    pixel[1] = extend_bytes[3 * (y * width + x + 1)];
+                    pixel[2] = extend_bytes[3 * ((y + 1) * width + x)];
+                    pixel[3] = extend_bytes[3 * ((y + 1) * width + x + 1)];
+                    // 梯度近似(相減取絕對值)
+                    byte value = 0;
+                    if(option == "vertical")
+                    {
+                        value = (byte)Math.Abs(pixel[3] - pixel[0]);
+                    }
+                    else if(option == "horizontal")
+                    {
+                        value = (byte)Math.Abs(pixel[2] - pixel[1]);
+                    }
+                    else if(option == "both")
+                    {
+                        value = (byte)(Math.Abs(pixel[3] - pixel[0]) + Math.Abs(pixel[2] - pixel[1]));
+                    }
+                    bytes[newIndex] = value;
+                    bytes[newIndex + 1] = value;
+                    bytes[newIndex + 2] = value;
+                    newIndex += 3;
+                }
+            }
+
+            // 將資料複製到圖像物件
+            // Marshal.Copy(src, startIndex, dstPtr, length)
+            // Scan0 - 影像資料的起始位置
+            Marshal.Copy(bytes, 0, data.Scan0, bytes.Length);
+            // 解除鎖定記憶體
+            converted.UnlockBits(data);
+            img = converted;
+        }
+
+        /*
+         * Sobel Filter
+         * @option : 選擇垂直, 水平或兩者
+         */
+        public void Sobel(string option)
+        {
+            /*
+             * 索引類型的圖片，其header有一個顏色表，這個表按照一定的規律存儲了所有的可能在這張圖片中出現的顏色。
+             * 它的每一個點的像素值(ARGB)並不是直接存儲的。在存儲具體點的數據的地方之只是存儲其在顏色表中的索引，
+             * 在進行的解碼的時候，讀取索引然後在顏色表中查找，找到對應所以的顏色值之後將其顯示出來作為這個點的顏色值。
+             * System.Drawing.Image不支援通過索引的方式存儲圖片資料的圖片實現SetPixel()
+             * 
+             * 可以通過Bitmap.Clone()來將索引圖片的像素資料複製到新建的圖片上，
+             * 並且在函數中指定新圖片的pixelFormat(不設置成索引類型)
+             * 接下來就對新建的圖片進行操作
+             */
+            // 複製原始影像並轉換格式
+            Bitmap converted = img.Clone(new Rectangle(0, 0, img.Width, img.Height), PixelFormat.Format24bppRgb);
+            // 鎖定影像內容到記憶體
+            // 將圖的資料存到記憶體, 可以直接對它操作
+            BitmapData data = converted.LockBits(new Rectangle(0, 0, converted.Width, converted.Height), ImageLockMode.ReadWrite, converted.PixelFormat);
+            // Stride - 影像scan的寬度
+            byte[] bytes = new byte[data.Stride * data.Height]; // 存放整個圖像資料
+            // 將圖像資料複製到陣列
+            // Marshal.Copy(srcPtr, dst, startIndex, length)
+            // Scan0 - 影像資料的起始位置
+            Marshal.Copy(data.Scan0, bytes, 0, bytes.Length);
+
+            // 周圍增加一圈, 利用周圍的值填補
+            byte[] extend_bytes = new byte[3 * (head.bytesPerLine + 2) * (head.height + 2)];
+            int height = head.height + 2;
+            int width = head.bytesPerLine + 2;
+            int mapHeight = head.height;
+            int mapWidth = head.bytesPerLine;
+            int mapX = 0, mapY = 0;
+            for (int y = 0; y < height; ++y)
+            {
+                for (int x = 0; x < width; ++x)
+                {
+                    int index = 3 * (y * width + x);
+                    mapX = x - 1;
+                    mapY = y - 1;
+                    if (x == 0)
+                    {
+                        mapX = 0;
+                    }
+                    else if (x == width - 1)
+                    {
+                        mapX = mapWidth - 1;
+                    }
+                    if (y == 0)
+                    {
+                        mapY = 0;
+                    }
+                    else if (y == height - 1)
+                    {
+                        mapY = mapHeight - 1;
+                    }
+                    int mapIndex = 3 * (mapY * mapWidth + mapX);
+                    extend_bytes[index] = bytes[mapIndex];
+                    extend_bytes[index + 1] = bytes[mapIndex + 1];
+                    extend_bytes[index + 2] = bytes[mapIndex + 2];
+                }
+            }
+            // Sobel
+            byte[] pixel = new byte[9]; // mask size = 3 x 3 = 9
+            int newIndex = 0;
+            for (int y = 1; y < height - 1; ++y)
+            {
+                for (int x = 1; x < width - 1; ++x)
+                {
+                    pixel[0] = extend_bytes[3 * ((y - 1) * width + x - 1)];
+                    pixel[1] = extend_bytes[3 * ((y - 1) * width + x)];
+                    pixel[2] = extend_bytes[3 * ((y - 1) * width + x + 1)];
+                    pixel[3] = extend_bytes[3 * (y * width + x - 1)];
+                    pixel[4] = extend_bytes[3 * (y * width + x)];
+                    pixel[5] = extend_bytes[3 * (y * width + x + 1)];
+                    pixel[6] = extend_bytes[3 * ((y + 1) * width + x - 1)];
+                    pixel[7] = extend_bytes[3 * ((y + 1) * width + x)];
+                    pixel[8] = extend_bytes[3 * ((y + 1) * width + x + 1)];
+                    // 梯度近似(相減取絕對值)
+                    byte value = 0;
+                    if (option == "vertical")
+                    {
+                        value = (byte)Math.Abs((pixel[2] + 2 * pixel[5] + pixel[8]) - (pixel[0] + 2 * pixel[3] + pixel[6]));
+                    }
+                    else if (option == "horizontal")
+                    {
+                        value = (byte)Math.Abs((pixel[6] + 2 * pixel[7] + pixel[8]) - (pixel[0] + 2 * pixel[1] + pixel[2]));
+                    }
+                    else if (option == "both")
+                    {
+                        value = (byte)(Math.Abs((pixel[6] + 2 * pixel[7] + pixel[8]) - (pixel[0] + 2 * pixel[1] + pixel[2])) +
+                                       Math.Abs((pixel[2] + 2 * pixel[5] + pixel[8]) - (pixel[0] + 2 * pixel[3] + pixel[6])));
+                    }
+                    bytes[newIndex] = value;
+                    bytes[newIndex + 1] = value;
+                    bytes[newIndex + 2] = value;
+                    newIndex += 3;
+                }
+            }
+
+            // 將資料複製到圖像物件
+            // Marshal.Copy(src, startIndex, dstPtr, length)
+            // Scan0 - 影像資料的起始位置
+            Marshal.Copy(bytes, 0, data.Scan0, bytes.Length);
+            // 解除鎖定記憶體
+            converted.UnlockBits(data);
+            img = converted;
+        }
+
+        /*
+         * Prewitt Filter
+         * @option : 選擇垂直, 水平或兩者
+         */
+        public void Prewitt(string option)
+        {
+            /*
+             * 索引類型的圖片，其header有一個顏色表，這個表按照一定的規律存儲了所有的可能在這張圖片中出現的顏色。
+             * 它的每一個點的像素值(ARGB)並不是直接存儲的。在存儲具體點的數據的地方之只是存儲其在顏色表中的索引，
+             * 在進行的解碼的時候，讀取索引然後在顏色表中查找，找到對應所以的顏色值之後將其顯示出來作為這個點的顏色值。
+             * System.Drawing.Image不支援通過索引的方式存儲圖片資料的圖片實現SetPixel()
+             * 
+             * 可以通過Bitmap.Clone()來將索引圖片的像素資料複製到新建的圖片上，
+             * 並且在函數中指定新圖片的pixelFormat(不設置成索引類型)
+             * 接下來就對新建的圖片進行操作
+             */
+            // 複製原始影像並轉換格式
+            Bitmap converted = img.Clone(new Rectangle(0, 0, img.Width, img.Height), PixelFormat.Format24bppRgb);
+            // 鎖定影像內容到記憶體
+            // 將圖的資料存到記憶體, 可以直接對它操作
+            BitmapData data = converted.LockBits(new Rectangle(0, 0, converted.Width, converted.Height), ImageLockMode.ReadWrite, converted.PixelFormat);
+            // Stride - 影像scan的寬度
+            byte[] bytes = new byte[data.Stride * data.Height]; // 存放整個圖像資料
+            // 將圖像資料複製到陣列
+            // Marshal.Copy(srcPtr, dst, startIndex, length)
+            // Scan0 - 影像資料的起始位置
+            Marshal.Copy(data.Scan0, bytes, 0, bytes.Length);
+
+            // 周圍增加一圈, 利用周圍的值填補
+            byte[] extend_bytes = new byte[3 * (head.bytesPerLine + 2) * (head.height + 2)];
+            int height = head.height + 2;
+            int width = head.bytesPerLine + 2;
+            int mapHeight = head.height;
+            int mapWidth = head.bytesPerLine;
+            int mapX = 0, mapY = 0;
+            for (int y = 0; y < height; ++y)
+            {
+                for (int x = 0; x < width; ++x)
+                {
+                    int index = 3 * (y * width + x);
+                    mapX = x - 1;
+                    mapY = y - 1;
+                    if (x == 0)
+                    {
+                        mapX = 0;
+                    }
+                    else if (x == width - 1)
+                    {
+                        mapX = mapWidth - 1;
+                    }
+                    if (y == 0)
+                    {
+                        mapY = 0;
+                    }
+                    else if (y == height - 1)
+                    {
+                        mapY = mapHeight - 1;
+                    }
+                    int mapIndex = 3 * (mapY * mapWidth + mapX);
+                    extend_bytes[index] = bytes[mapIndex];
+                    extend_bytes[index + 1] = bytes[mapIndex + 1];
+                    extend_bytes[index + 2] = bytes[mapIndex + 2];
+                }
+            }
+            // Prewitt
+            byte[] pixel = new byte[9]; // mask size = 3 x 3 = 9
+            int newIndex = 0;
+            for (int y = 1; y < height - 1; ++y)
+            {
+                for (int x = 1; x < width - 1; ++x)
+                {
+                    pixel[0] = extend_bytes[3 * ((y - 1) * width + x - 1)];
+                    pixel[1] = extend_bytes[3 * ((y - 1) * width + x)];
+                    pixel[2] = extend_bytes[3 * ((y - 1) * width + x + 1)];
+                    pixel[3] = extend_bytes[3 * (y * width + x - 1)];
+                    pixel[4] = extend_bytes[3 * (y * width + x)];
+                    pixel[5] = extend_bytes[3 * (y * width + x + 1)];
+                    pixel[6] = extend_bytes[3 * ((y + 1) * width + x - 1)];
+                    pixel[7] = extend_bytes[3 * ((y + 1) * width + x)];
+                    pixel[8] = extend_bytes[3 * ((y + 1) * width + x + 1)];
+                    // 梯度近似(相減取絕對值)
+                    byte value = 0;
+                    if (option == "vertical")
+                    {
+                        value = (byte)Math.Abs((pixel[2] + pixel[5] + pixel[8]) - (pixel[0] + pixel[3] + pixel[6]));
+                    }
+                    else if (option == "horizontal")
+                    {
+                        value = (byte)Math.Abs((pixel[6] + pixel[7] + pixel[8]) - (pixel[0] + pixel[1] + pixel[2]));
+                    }
+                    else if (option == "both")
+                    {
+                        value = (byte)(Math.Abs((pixel[6] + pixel[7] + pixel[8]) - (pixel[0] + pixel[1] + pixel[2])) +
+                                       Math.Abs((pixel[2] + pixel[5] + pixel[8]) - (pixel[0] + pixel[3] + pixel[6])));
+                    }
+                    bytes[newIndex] = value;
+                    bytes[newIndex + 1] = value;
+                    bytes[newIndex + 2] = value;
+                    newIndex += 3;
+                }
+            }
+
+            // 將資料複製到圖像物件
+            // Marshal.Copy(src, startIndex, dstPtr, length)
+            // Scan0 - 影像資料的起始位置
+            Marshal.Copy(bytes, 0, data.Scan0, bytes.Length);
+            // 解除鎖定記憶體
+            converted.UnlockBits(data);
+            img = converted;
+        }
+
+        // 產生隨機不同顏色
+        public Color[] GetUniqueRandomColor(int cnt)
+        {
+            Color[] colors = new Color[cnt];
+            HashSet<Color> hs = new HashSet<Color>();
+            Random randomColor = new Random();
+            for (int i = 0; i < cnt; ++i)
+            {
+                Color c;
+                while (!hs.Add(c = Color.FromArgb(randomColor.Next(255), randomColor.Next(255), randomColor.Next(255)))) ;
+                colors[i] = c;
+            }
+
+            return colors;
+        }
+
+        /*
+         * Connected Component Analysis
+         * (8鄰域連接, 8-connected neighborhood, 左, 左上, 上, 右上)
+         * (兩次掃描法, two-pass algorithm)
+         * 
+         * @return : 物件數量
+         */
+        public int Component()
+        {
+            /*
+             * 索引類型的圖片，其header有一個顏色表，這個表按照一定的規律存儲了所有的可能在這張圖片中出現的顏色。
+             * 它的每一個點的像素值(ARGB)並不是直接存儲的。在存儲具體點的數據的地方之只是存儲其在顏色表中的索引，
+             * 在進行的解碼的時候，讀取索引然後在顏色表中查找，找到對應所以的顏色值之後將其顯示出來作為這個點的顏色值。
+             * System.Drawing.Image不支援通過索引的方式存儲圖片資料的圖片實現SetPixel()
+             * 
+             * 可以通過Bitmap.Clone()來將索引圖片的像素資料複製到新建的圖片上，
+             * 並且在函數中指定新圖片的pixelFormat(不設置成索引類型)
+             * 接下來就對新建的圖片進行操作
+             */
+            // 複製原始影像並轉換格式
+            Bitmap converted = img.Clone(new Rectangle(0, 0, img.Width, img.Height), PixelFormat.Format24bppRgb);
+            // 鎖定影像內容到記憶體
+            // 將圖的資料存到記憶體, 可以直接對它操作
+            BitmapData data = converted.LockBits(new Rectangle(0, 0, converted.Width, converted.Height), ImageLockMode.ReadWrite, converted.PixelFormat);
+            // Stride - 影像scan的寬度
+            byte[] bytes = new byte[data.Stride * data.Height]; // 存放整個圖像資料
+            // 將圖像資料複製到陣列
+            // Marshal.Copy(srcPtr, dst, startIndex, length)
+            // Scan0 - 影像資料的起始位置
+            Marshal.Copy(data.Scan0, bytes, 0, bytes.Length);
+
+            // Connected Component Analysis
+            int height = converted.Height;
+            int width = converted.Width;
+            int total = height * width;
+            int[] neighbors = new int[4];
+            List<List<int>> linked = new List<List<int>>(); // 儲存相等的標號
+            linked.Add(new List<int>());                    // 建立第一個標號的位置(不儲存其他標號, 代表0)
+            List<int> neighborsLabels = new List<int>(4);   // 儲存鄰居的標號
+            int[] labels = new int[total];                  // 儲存整個圖的標號
+            Array.Clear(labels, 0, labels.Length);
+            bool neighborEmpty = true;
+            int nextLabel = 1;
+            int minLabel;
+            int labelIndex = 0;
+            // First pass
+            for (int y = 0; y < height; ++y)
+            {
+                for (int x = 0; x < width; ++x)
+                {
+                    labelIndex = y * width + x;
+                    if (bytes[3 * (y * width + x)] != 0) // 若pixel值不為0(為255)
+                    {
+                        // 處理邊緣情況
+                        if(x == 0 || y == 0)
+                        {
+                            neighbors[0] = 0;
+                        }
+                        else
+                        {
+                            neighbors[0] = labels[(y - 1) * width + x - 1];
+                        }
+                        if(y == 0)
+                        {
+                            neighbors[1] = 0;
+                        }
+                        else
+                        {
+                            neighbors[1] = labels[(y - 1) * width + x];
+                        }
+                        if(x == width - 1 || y == 0)
+                        {
+                            neighbors[2] = 0;
+                        }
+                        else
+                        {
+                            neighbors[2] = labels[(y - 1) * width + x + 1];
+                        }
+                        if (x == 0)
+                        {
+                            neighbors[3] = 0;
+                        }
+                        else
+                        {
+                            neighbors[3] = labels[y * width + x - 1];
+                        }
+                        neighborEmpty = true;
+                        for (int i = 0; i < 4; ++i)
+                        {
+                            if(neighbors[i] != 0)
+                            {
+                                neighborEmpty = false;
+                            }
+                        }
+                        if(neighborEmpty) // 鄰居都是0
+                        {
+                            // 新增相等標號
+                            linked.Add(new List<int>());
+                            linked[nextLabel].Add(nextLabel);
+                            // 目標像素設新標號
+                            labels[labelIndex] = nextLabel;
+                            ++nextLabel;
+                        }
+                        else // 鄰居有非0值, 找最小label值
+                        {
+                            neighborsLabels.Clear();
+                            // 取得鄰居最小label
+                            minLabel = Int32.MaxValue;
+                            for (int i = 0; i < 4; ++i)
+                            {
+                                if(neighbors[i] == 0)
+                                {
+                                    continue;
+                                }
+                                neighborsLabels.Add(neighbors[i]);
+                                if (neighbors[i] < minLabel)
+                                {
+                                    minLabel = neighbors[i];
+                                }
+                            }
+                            // 設為鄰居中最小的label
+                            labels[labelIndex] = minLabel;
+                            // 更新相等標號
+                            for (int i = 0; i < 4; ++i)
+                            {
+                                if (neighbors[i] == 0)
+                                {
+                                    continue;
+                                }
+                                foreach(int l in neighborsLabels)
+                                {
+                                    linked[neighbors[i]] = linked[neighbors[i]].Union(linked[l]).ToList();
+                                }
+                            }
+                        }
+                    }
+                    else // 背景像素設為0
+                    {
+                        labels[labelIndex] = 0;
+                    }
+                }
+            }
+
+            // Second pass
+            int offset = data.Stride - converted.Width * 3; // 掃描寬度與顯示寬度的間隙
+            int index = 0;
+            Color[] colors = GetUniqueRandomColor(500);
+            List<int> list = new List<int>(); // 用來計算物件的數量
+            int value;
+            for (int y = 0; y < height; ++y)
+            {
+                for (int x = 0; x < width; ++x)
+                {
+                    labelIndex = y * width + x;
+                    if (bytes[3 * (y * width + x)] != 0) // 物件
+                    {
+                        // 更新label
+                        labels[labelIndex] = linked[labels[labelIndex]].Min();
+
+                        // 統計物件數
+                        list.Add(labels[labelIndex]);
+                    }
+                    // 不同物件顏色不同
+                    value = colors[labels[labelIndex]].ToArgb();
+                    bytes[index] = (byte)(value & 0x000000FF);
+                    bytes[index + 1] = (byte)((value >> 8) & 0x000000FF);
+                    bytes[index + 2] = (byte)((value >> 16) & 0x000000FF);
+                    index += 3;
+                }
+                index += offset; // 將index移過那段間隙
+            }
+            // 將資料複製到圖像物件
+            // Marshal.Copy(src, startIndex, dstPtr, length)
+            // Scan0 - 影像資料的起始位置
+            Marshal.Copy(bytes, 0, data.Scan0, bytes.Length);
+            // 解除鎖定記憶體
+            converted.UnlockBits(data);
+            img = converted;
+
+            return list.Distinct().Count(); // 物件數量
+        }
+
+        /*
+         * 取得圖像資料陣列
+         * 
+         * @return : 資料陣列
+         */
+         public byte[] GetBytes()
+        {
+            /*
+             * 索引類型的圖片，其header有一個顏色表，這個表按照一定的規律存儲了所有的可能在這張圖片中出現的顏色。
+             * 它的每一個點的像素值(ARGB)並不是直接存儲的。在存儲具體點的數據的地方之只是存儲其在顏色表中的索引，
+             * 在進行的解碼的時候，讀取索引然後在顏色表中查找，找到對應所以的顏色值之後將其顯示出來作為這個點的顏色值。
+             * System.Drawing.Image不支援通過索引的方式存儲圖片資料的圖片實現SetPixel()
+             * 
+             * 可以通過Bitmap.Clone()來將索引圖片的像素資料複製到新建的圖片上，
+             * 並且在函數中指定新圖片的pixelFormat(不設置成索引類型)
+             * 接下來就對新建的圖片進行操作
+             */
+            // 複製原始影像並轉換格式
+            Bitmap converted = img.Clone(new Rectangle(0, 0, img.Width, img.Height), PixelFormat.Format24bppRgb);
+            // 鎖定影像內容到記憶體
+            // 將圖的資料存到記憶體, 可以直接對它操作
+            BitmapData data = converted.LockBits(new Rectangle(0, 0, converted.Width, converted.Height), ImageLockMode.ReadOnly, converted.PixelFormat);
+            // Stride - 影像scan的寬度
+            byte[] bytes = new byte[data.Stride * data.Height]; // 存放整個圖像資料
+            // 將圖像資料複製到陣列
+            // Marshal.Copy(srcPtr, dst, startIndex, length)
+            // Scan0 - 影像資料的起始位置
+            Marshal.Copy(data.Scan0, bytes, 0, bytes.Length);
+            // 解除鎖定記憶體
+            converted.UnlockBits(data);
+
+            return bytes;
+        }
+
+        /*
+         * 透過高斯分布(常態分布)增加椒鹽雜訊(黑白雜訊)
+         */
+        public void SaltPepper()
+        {
+            /*
+             * 索引類型的圖片，其header有一個顏色表，這個表按照一定的規律存儲了所有的可能在這張圖片中出現的顏色。
+             * 它的每一個點的像素值(ARGB)並不是直接存儲的。在存儲具體點的數據的地方之只是存儲其在顏色表中的索引，
+             * 在進行的解碼的時候，讀取索引然後在顏色表中查找，找到對應所以的顏色值之後將其顯示出來作為這個點的顏色值。
+             * System.Drawing.Image不支援通過索引的方式存儲圖片資料的圖片實現SetPixel()
+             * 
+             * 可以通過Bitmap.Clone()來將索引圖片的像素資料複製到新建的圖片上，
+             * 並且在函數中指定新圖片的pixelFormat(不設置成索引類型)
+             * 接下來就對新建的圖片進行操作
+             */
+            // 複製原始影像並轉換格式
+            Bitmap converted = img.Clone(new Rectangle(0, 0, img.Width, img.Height), PixelFormat.Format24bppRgb);
+            // 鎖定影像內容到記憶體
+            // 將圖的資料存到記憶體, 可以直接對它操作
+            BitmapData data = converted.LockBits(new Rectangle(0, 0, converted.Width, converted.Height), ImageLockMode.ReadWrite, converted.PixelFormat);
+            // Stride - 影像scan的寬度
+            byte[] bytes = new byte[data.Stride * data.Height]; // 存放整個圖像資料
+            // 將圖像資料複製到陣列
+            // Marshal.Copy(srcPtr, dst, startIndex, length)
+            // Scan0 - 影像資料的起始位置
+            Marshal.Copy(data.Scan0, bytes, 0, bytes.Length);
+
+            int offset = data.Stride - converted.Width * 3; // 掃描寬度與顯示寬度的間隙
+            int height = converted.Height;
+            int width = converted.Width;
+            int index = 0;
+            double mean = 0;    // 期望值
+            double std = 1;     // 標準差
+            double u, v;        // 均勻分布數值(0~1間的亂數)
+            double X;           // 常態分佈數值(結果)
+            for (int y = 0; y < height; ++y)
+            {
+                for (int x = 0; x < width; ++x)
+                {
+                    u = new Random(Guid.NewGuid().GetHashCode()).NextDouble();
+                    v = new Random(Guid.NewGuid().GetHashCode()).NextDouble();
+                    X = Math.Sqrt(-2.0 * Math.Log(u)) * Math.Cos(2.0 * Math.PI * v) * std + mean;
+                    if(X > 2)       // salt(white)
+                    {
+                        bytes[index] = 255;
+                        bytes[index + 1] = 255;
+                        bytes[index + 2] = 255;
+                    }
+                    else if(X < -2) // pepper(black)
+                    {
+                        bytes[index] = 0;
+                        bytes[index + 1] = 0;
+                        bytes[index + 2] = 0;
+                    }
+                    index += 3;
+                }
+                index += offset; // 將index移過那段間隙
             }
 
             // 將資料複製到圖像物件

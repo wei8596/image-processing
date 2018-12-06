@@ -43,6 +43,7 @@ namespace imageProcess
             menuSave.Enabled = false;
             menuTool.Enabled = false;
             menuFilter.Enabled = false;
+            menuCoding.Enabled = false;
         }
 
         // PCX物件
@@ -59,7 +60,7 @@ namespace imageProcess
                 pictureBox1.Image = null;
                 pictureBox2.Image = null;
                 pictureBox3.Image = null;
-                textBoxInfo.Text = "";
+                dataGridView1.Visible = false;
                 labelXY.Text = "";
                 labelR.Text = "";
                 labelG.Text = "";
@@ -80,7 +81,12 @@ namespace imageProcess
                     // 將載入的圖像放到pictureBox1
                     pictureBox1.Image = pcxOrigin.pcxImg;
                     // 顯示圖像header資訊
-                    textBoxInfo.Text = pcxOrigin.PrintInfo();
+                    string[,] info = pcxOrigin.GetInfo();
+                    for(int i = 0; i < 16; ++i)
+                    {
+                        dataGridView1.Rows.Add(new object[] { info[i, 0], info[i, 1] });
+                    }
+                    dataGridView1.Visible = true;
                     // nPlanes = 3, 無調色盤
                     if (pcxOrigin.head.nPlanes == 1)
                     {
@@ -126,6 +132,7 @@ namespace imageProcess
                     menuSave.Enabled = true;
                     menuTool.Enabled = true;
                     menuFilter.Enabled = true;
+                    menuCoding.Enabled = true;
 
                     // 預先製作並保存灰階影像
                     pcxGray = new ImgPcx(pcxOrigin);
@@ -191,6 +198,7 @@ namespace imageProcess
                     menuSave.Enabled = false;
                     menuTool.Enabled = false;
                     menuFilter.Enabled = false;
+                    menuCoding.Enabled = false;
                 }
             }
             catch (Exception ex)
@@ -488,6 +496,60 @@ namespace imageProcess
             f.pcxGray = pcxGray;            // 傳送灰階圖像
             f.ShowDialog(this);             // 設定FormEdge為FormMain的上層，並開啟FormEdge視窗
                                             // 由於在FormMain的程式碼內使用this，所以this為FormMain物件本身
+        }
+
+        // 開啟Roberts Filter功能視窗
+        private void menuRoberts_Click(object sender, EventArgs e)
+        {
+            FormRoberts f = new FormRoberts();  // 建立FormRoberts物件
+            f.pcxGray = pcxGray;                // 傳送灰階圖像
+            f.ShowDialog(this);                 // 設定FormRoberts為FormMain的上層，並開啟FormRoberts視窗
+                                                // 由於在FormMain的程式碼內使用this，所以this為FormMain物件本身
+        }
+
+        // 開啟Sobel Filter功能視窗
+        private void menuSobel_Click(object sender, EventArgs e)
+        {
+            FormSobel f = new FormSobel();  // 建立FormSobel物件
+            f.pcxGray = pcxGray;            // 傳送灰階圖像
+            f.ShowDialog(this);             // 設定FormSobel為FormMain的上層，並開啟FormSobel視窗
+                                            // 由於在FormMain的程式碼內使用this，所以this為FormMain物件本身
+        }
+
+        // 開啟Prewitt Filter功能視窗
+        private void menuPrewitt_Click(object sender, EventArgs e)
+        {
+            FormPrewitt f = new FormPrewitt();  // 建立FormPrewitt物件
+            f.pcxGray = pcxGray;                // 傳送灰階圖像
+            f.ShowDialog(this);                 // 設定FormPrewitt為FormMain的上層，並開啟FormPrewitt視窗
+                                                // 由於在FormMain的程式碼內使用this，所以this為FormMain物件本身
+        }
+
+        // 開啟Connected Component Analysis功能視窗
+        private void menuComponent_Click(object sender, EventArgs e)
+        {
+            FormComponent f = new FormComponent();  // 建立FormComponent物件
+            f.pcxGray = pcxGray;                    // 傳送灰階圖像
+            f.ShowDialog(this);                     // 設定FormComponent為FormMain的上層，並開啟FormComponent視窗
+                                                    // 由於在FormMain的程式碼內使用this，所以this為FormMain物件本身
+        }
+
+        // 開啟Huffman編碼功能視窗
+        private void menuHuffman_Click(object sender, EventArgs e)
+        {
+            FormHuffman f = new FormHuffman();  // 建立FormHuffman物件
+            f.pcxGray = pcxGray;                // 傳送灰階圖像
+            f.ShowDialog(this);                 // 設定FormHuffman為FormMain的上層，並開啟FormHuffman視窗
+                                                // 由於在FormMain的程式碼內使用this，所以this為FormMain物件本身
+        }
+
+        // 開啟選取功能視窗
+        private void menuSelect_Click(object sender, EventArgs e)
+        {
+            FormSelect f = new FormSelect();    // 建立FormSelect物件
+            f.pcxOrigin = pcxOrigin;            // 傳送ImgPcx物件
+            f.ShowDialog(this);                 // 設定FormSelect為FormMain的上層，並開啟FormSelect視窗
+                                                // 由於在FormMain的程式碼內使用this，所以this為FormMain物件本身
         }
     }
 }

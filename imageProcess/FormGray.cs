@@ -28,6 +28,9 @@ namespace imageProcess
                 pcxAfter.Gray();
                 pictureBox2.Image = pcxAfter.pcxImg;
 
+                // 顯示SNR值 (到小數後2位)
+                textBox1.Text = pcxOrigin.GetSNR(pcxOrigin, pcxAfter).ToString("f2");
+
                 // 清除圖表資料
                 chart1.Series.Clear();
                 // 設定圖表的高度與圖片相同

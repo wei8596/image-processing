@@ -28,12 +28,18 @@ namespace imageProcess
                 pcxAfter.Invert();
                 pictureBox2.Image = pcxAfter.pcxImg;
 
+                // 顯示SNR值 (到小數後2位)
+                textBox1.Text = pcxOrigin.GetSNR(pcxOrigin, pcxAfter).ToString("f2");
+
                 // 灰階
                 pictureBox3.Image = pcxGray.pcxImg;
                 pcxAfter = new ImgPcx(pcxGray);
                 // 負片
                 pcxAfter.Invert();
                 pictureBox4.Image = pcxAfter.pcxImg;
+
+                // 顯示SNR值 (到小數後2位)
+                textBox2.Text = pcxGray.GetSNR(pcxGray, pcxAfter).ToString("f2");
 
                 // 繪製histogram
                 // 設定圖表的高度與圖片相同

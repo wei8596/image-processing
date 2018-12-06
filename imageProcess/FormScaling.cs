@@ -37,6 +37,8 @@ namespace imageProcess
             pcxAfter = new ImgPcx(pcxOrigin);
             pcxAfter.ZoomIn_Duplication(Double.Parse(textBox1.Text));
             pictureBox1.Image = pcxAfter.pcxImg;
+            // 顯示SNR值 (到小數後2位)
+            textBox2.Text = pcxOrigin.GetSNR(pcxOrigin, pcxAfter).ToString("f2");
         }
 
         // 放大(線性插值)
@@ -45,6 +47,8 @@ namespace imageProcess
             pcxAfter = new ImgPcx(pcxOrigin);
             pcxAfter.ZoomIn_Interpolation(Double.Parse(textBox1.Text));
             pictureBox1.Image = pcxAfter.pcxImg;
+            // 顯示SNR值 (到小數後2位)
+            textBox2.Text = pcxOrigin.GetSNR(pcxOrigin, pcxAfter).ToString("f2");
         }
 
         // 縮小(抽取)
@@ -53,6 +57,8 @@ namespace imageProcess
             pcxAfter = new ImgPcx(pcxOrigin);
             pcxAfter.ZoomOut_Decimation(Double.Parse(textBox1.Text));
             pictureBox1.Image = pcxAfter.pcxImg;
+            // 顯示SNR值 (到小數後2位)
+            textBox2.Text = pcxOrigin.GetSNR(pcxAfter, pcxOrigin).ToString("f2");
         }
 
         // 縮小(線性插值)
@@ -61,6 +67,8 @@ namespace imageProcess
             pcxAfter = new ImgPcx(pcxOrigin);
             pcxAfter.ZoomOut_Interpolation(Double.Parse(textBox1.Text));
             pictureBox1.Image = pcxAfter.pcxImg;
+            // 顯示SNR值 (到小數後2位)
+            textBox2.Text = pcxOrigin.GetSNR(pcxAfter, pcxOrigin).ToString("f2");
         }
     }
 }

@@ -28,11 +28,20 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormMain));
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.textBoxInfo = new System.Windows.Forms.TextBox();
+            this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.pictureBox3 = new System.Windows.Forms.PictureBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.chart1 = new System.Windows.Forms.DataVisualization.Charting.Chart();
@@ -57,6 +66,8 @@
             this.menuContrastStretch = new System.Windows.Forms.ToolStripMenuItem();
             this.menuHistEqual = new System.Windows.Forms.ToolStripMenuItem();
             this.menuHistSpec = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuComponent = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuSelect = new System.Windows.Forms.ToolStripMenuItem();
             this.menuFilter = new System.Windows.Forms.ToolStripMenuItem();
             this.menuOutlier = new System.Windows.Forms.ToolStripMenuItem();
             this.menuMedian = new System.Windows.Forms.ToolStripMenuItem();
@@ -65,14 +76,22 @@
             this.menuHighpass = new System.Windows.Forms.ToolStripMenuItem();
             this.menuHighBoost = new System.Windows.Forms.ToolStripMenuItem();
             this.menuEdge = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuGradient = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuRoberts = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuSobel = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuPrewitt = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuCoding = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuHuffman = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuFractal = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
+            this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.labelB = new System.Windows.Forms.Label();
             this.labelG = new System.Windows.Forms.Label();
             this.labelR = new System.Windows.Forms.Label();
             this.labelDim = new System.Windows.Forms.Label();
-            this.pictureBox2 = new System.Windows.Forms.PictureBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.groupBox2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).BeginInit();
             this.groupBox3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.chart1)).BeginInit();
@@ -95,7 +114,7 @@
             // 
             // groupBox2
             // 
-            this.groupBox2.Controls.Add(this.textBoxInfo);
+            this.groupBox2.Controls.Add(this.dataGridView1);
             this.groupBox2.Location = new System.Drawing.Point(503, 52);
             this.groupBox2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.groupBox2.Name = "groupBox2";
@@ -105,21 +124,76 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Information";
             // 
-            // textBoxInfo
+            // dataGridView1
             // 
-            this.textBoxInfo.BackColor = System.Drawing.SystemColors.Control;
-            this.textBoxInfo.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.textBoxInfo.CausesValidation = false;
-            this.textBoxInfo.Cursor = System.Windows.Forms.Cursors.Default;
-            this.textBoxInfo.Enabled = false;
-            this.textBoxInfo.Font = new System.Drawing.Font("微軟正黑體", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
-            this.textBoxInfo.Location = new System.Drawing.Point(21, 20);
-            this.textBoxInfo.Multiline = true;
-            this.textBoxInfo.Name = "textBoxInfo";
-            this.textBoxInfo.ReadOnly = true;
-            this.textBoxInfo.Size = new System.Drawing.Size(324, 320);
-            this.textBoxInfo.TabIndex = 2;
-            this.textBoxInfo.TabStop = false;
+            this.dataGridView1.AllowUserToAddRows = false;
+            this.dataGridView1.AllowUserToDeleteRows = false;
+            this.dataGridView1.AllowUserToResizeColumns = false;
+            this.dataGridView1.AllowUserToResizeRows = false;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.dataGridView1.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
+            this.dataGridView1.BackgroundColor = System.Drawing.Color.White;
+            this.dataGridView1.ClipboardCopyMode = System.Windows.Forms.DataGridViewClipboardCopyMode.Disable;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("微軟正黑體", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
+            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dataGridView1.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
+            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.Column1,
+            this.Column2});
+            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle5.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle5.Font = new System.Drawing.Font("微軟正黑體", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
+            dataGridViewCellStyle5.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle5.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle5.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle5.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dataGridView1.DefaultCellStyle = dataGridViewCellStyle5;
+            this.dataGridView1.Location = new System.Drawing.Point(6, 20);
+            this.dataGridView1.MultiSelect = false;
+            this.dataGridView1.Name = "dataGridView1";
+            this.dataGridView1.ReadOnly = true;
+            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle6.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle6.Font = new System.Drawing.Font("微軟正黑體", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
+            dataGridViewCellStyle6.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle6.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle6.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle6.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dataGridView1.RowHeadersDefaultCellStyle = dataGridViewCellStyle6;
+            this.dataGridView1.RowHeadersVisible = false;
+            dataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.dataGridView1.RowsDefaultCellStyle = dataGridViewCellStyle7;
+            this.dataGridView1.RowTemplate.Height = 24;
+            this.dataGridView1.ShowCellToolTips = false;
+            this.dataGridView1.ShowEditingIcon = false;
+            this.dataGridView1.Size = new System.Drawing.Size(339, 320);
+            this.dataGridView1.TabIndex = 3;
+            this.dataGridView1.TabStop = false;
+            this.dataGridView1.Visible = false;
+            // 
+            // Column1
+            // 
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.Column1.DefaultCellStyle = dataGridViewCellStyle3;
+            this.Column1.HeaderText = "Info";
+            this.Column1.Name = "Column1";
+            this.Column1.ReadOnly = true;
+            this.Column1.Width = 180;
+            // 
+            // Column2
+            // 
+            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.Column2.DefaultCellStyle = dataGridViewCellStyle4;
+            this.Column2.HeaderText = "Value";
+            this.Column2.Name = "Column2";
+            this.Column2.ReadOnly = true;
+            this.Column2.Width = 139;
             // 
             // pictureBox3
             // 
@@ -183,7 +257,8 @@
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.menuFile,
             this.menuTool,
-            this.menuFilter});
+            this.menuFilter,
+            this.menuCoding});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(866, 24);
@@ -208,7 +283,7 @@
             this.menuOpen.Name = "menuOpen";
             this.menuOpen.ShortcutKeyDisplayString = "";
             this.menuOpen.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-            this.menuOpen.Size = new System.Drawing.Size(180, 22);
+            this.menuOpen.Size = new System.Drawing.Size(160, 22);
             this.menuOpen.Text = "&Open";
             this.menuOpen.Click += new System.EventHandler(this.menuOpen_Click);
             // 
@@ -216,7 +291,7 @@
             // 
             this.menuSave.Name = "menuSave";
             this.menuSave.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.A)));
-            this.menuSave.Size = new System.Drawing.Size(180, 22);
+            this.menuSave.Size = new System.Drawing.Size(160, 22);
             this.menuSave.Text = "Save &As";
             this.menuSave.Click += new System.EventHandler(this.menuSave_Click);
             // 
@@ -224,7 +299,7 @@
             // 
             this.menuClose.Name = "menuClose";
             this.menuClose.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.X)));
-            this.menuClose.Size = new System.Drawing.Size(180, 22);
+            this.menuClose.Size = new System.Drawing.Size(160, 22);
             this.menuClose.Text = "E&xit";
             this.menuClose.Click += new System.EventHandler(this.menuClose_Click);
             // 
@@ -242,7 +317,9 @@
             this.menuBitPlane,
             this.menuContrastStretch,
             this.menuHistEqual,
-            this.menuHistSpec});
+            this.menuHistSpec,
+            this.menuComponent,
+            this.menuSelect});
             this.menuTool.Name = "menuTool";
             this.menuTool.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.T)));
             this.menuTool.ShowShortcutKeys = false;
@@ -333,6 +410,20 @@
             this.menuHistSpec.Text = "Histogram Specification";
             this.menuHistSpec.Click += new System.EventHandler(this.menuHistSpec_Click);
             // 
+            // menuComponent
+            // 
+            this.menuComponent.Name = "menuComponent";
+            this.menuComponent.Size = new System.Drawing.Size(209, 22);
+            this.menuComponent.Text = "Connected Component";
+            this.menuComponent.Click += new System.EventHandler(this.menuComponent_Click);
+            // 
+            // menuSelect
+            // 
+            this.menuSelect.Name = "menuSelect";
+            this.menuSelect.Size = new System.Drawing.Size(209, 22);
+            this.menuSelect.Text = "Select";
+            this.menuSelect.Click += new System.EventHandler(this.menuSelect_Click);
+            // 
             // menuFilter
             // 
             this.menuFilter.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -342,7 +433,8 @@
             this.menuLowpass,
             this.menuHighpass,
             this.menuHighBoost,
-            this.menuEdge});
+            this.menuEdge,
+            this.menuGradient});
             this.menuFilter.Name = "menuFilter";
             this.menuFilter.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.I)));
             this.menuFilter.ShowShortcutKeys = false;
@@ -398,6 +490,59 @@
             this.menuEdge.Text = "Edge Crispening";
             this.menuEdge.Click += new System.EventHandler(this.menuEdge_Click);
             // 
+            // menuGradient
+            // 
+            this.menuGradient.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.menuRoberts,
+            this.menuSobel,
+            this.menuPrewitt});
+            this.menuGradient.Name = "menuGradient";
+            this.menuGradient.Size = new System.Drawing.Size(193, 22);
+            this.menuGradient.Text = "Gradient";
+            // 
+            // menuRoberts
+            // 
+            this.menuRoberts.Name = "menuRoberts";
+            this.menuRoberts.Size = new System.Drawing.Size(148, 22);
+            this.menuRoberts.Text = "Roberts Filter";
+            this.menuRoberts.Click += new System.EventHandler(this.menuRoberts_Click);
+            // 
+            // menuSobel
+            // 
+            this.menuSobel.Name = "menuSobel";
+            this.menuSobel.Size = new System.Drawing.Size(148, 22);
+            this.menuSobel.Text = "Sobel Filter";
+            this.menuSobel.Click += new System.EventHandler(this.menuSobel_Click);
+            // 
+            // menuPrewitt
+            // 
+            this.menuPrewitt.Name = "menuPrewitt";
+            this.menuPrewitt.Size = new System.Drawing.Size(148, 22);
+            this.menuPrewitt.Text = "Prewitt Filter";
+            this.menuPrewitt.Click += new System.EventHandler(this.menuPrewitt_Click);
+            // 
+            // menuCoding
+            // 
+            this.menuCoding.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.menuHuffman,
+            this.menuFractal});
+            this.menuCoding.Name = "menuCoding";
+            this.menuCoding.Size = new System.Drawing.Size(61, 20);
+            this.menuCoding.Text = "&Coding";
+            // 
+            // menuHuffman
+            // 
+            this.menuHuffman.Name = "menuHuffman";
+            this.menuHuffman.Size = new System.Drawing.Size(123, 22);
+            this.menuHuffman.Text = "Huffman";
+            this.menuHuffman.Click += new System.EventHandler(this.menuHuffman_Click);
+            // 
+            // menuFractal
+            // 
+            this.menuFractal.Name = "menuFractal";
+            this.menuFractal.Size = new System.Drawing.Size(123, 22);
+            this.menuFractal.Text = "Fractal";
+            // 
             // groupBox5
             // 
             this.groupBox5.Controls.Add(this.pictureBox2);
@@ -411,6 +556,14 @@
             this.groupBox5.Size = new System.Drawing.Size(842, 47);
             this.groupBox5.TabIndex = 12;
             this.groupBox5.TabStop = false;
+            // 
+            // pictureBox2
+            // 
+            this.pictureBox2.Location = new System.Drawing.Point(289, 19);
+            this.pictureBox2.Name = "pictureBox2";
+            this.pictureBox2.Size = new System.Drawing.Size(15, 15);
+            this.pictureBox2.TabIndex = 2;
+            this.pictureBox2.TabStop = false;
             // 
             // labelB
             // 
@@ -444,14 +597,6 @@
             this.labelDim.Size = new System.Drawing.Size(0, 16);
             this.labelDim.TabIndex = 1;
             // 
-            // pictureBox2
-            // 
-            this.pictureBox2.Location = new System.Drawing.Point(289, 19);
-            this.pictureBox2.Name = "pictureBox2";
-            this.pictureBox2.Size = new System.Drawing.Size(15, 15);
-            this.pictureBox2.TabIndex = 2;
-            this.pictureBox2.TabStop = false;
-            // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 16F);
@@ -468,11 +613,11 @@
             this.MainMenuStrip = this.menuStrip1;
             this.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.Name = "FormMain";
-            this.Text = "Image_Processing  By ChenWeiFan";
+            this.Text = "Image Processing  By ChenWeiFan";
             this.Load += new System.EventHandler(this.FormMain_Load);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.groupBox2.ResumeLayout(false);
-            this.groupBox2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).EndInit();
             this.groupBox3.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.chart1)).EndInit();
@@ -513,7 +658,6 @@
         private System.Windows.Forms.ToolStripMenuItem menuRotate;
         private System.Windows.Forms.ToolStripMenuItem menuRGB;
         private System.Windows.Forms.ToolStripMenuItem menuThreshold;
-        private System.Windows.Forms.TextBox textBoxInfo;
         private System.Windows.Forms.ToolStripMenuItem menuScaling;
         private System.Windows.Forms.ToolStripMenuItem menuTransparency;
         private System.Windows.Forms.ToolStripMenuItem menuBitPlane;
@@ -530,6 +674,18 @@
         private System.Windows.Forms.ToolStripMenuItem menuHighBoost;
         private System.Windows.Forms.ToolStripMenuItem menuEdge;
         private System.Windows.Forms.PictureBox pictureBox2;
+        private System.Windows.Forms.ToolStripMenuItem menuGradient;
+        private System.Windows.Forms.ToolStripMenuItem menuRoberts;
+        private System.Windows.Forms.ToolStripMenuItem menuSobel;
+        private System.Windows.Forms.ToolStripMenuItem menuPrewitt;
+        private System.Windows.Forms.ToolStripMenuItem menuCoding;
+        private System.Windows.Forms.ToolStripMenuItem menuHuffman;
+        private System.Windows.Forms.ToolStripMenuItem menuFractal;
+        private System.Windows.Forms.ToolStripMenuItem menuComponent;
+        private System.Windows.Forms.DataGridView dataGridView1;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column1;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column2;
+        private System.Windows.Forms.ToolStripMenuItem menuSelect;
     }
 }
 

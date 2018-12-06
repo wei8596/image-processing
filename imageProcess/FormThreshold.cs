@@ -27,6 +27,9 @@ namespace imageProcess
             pcxAfter.Threshold(0);
             pictureBox2.Image = pcxAfter.pcxImg;
 
+            // 顯示SNR值 (到小數後2位)
+            textBox2.Text = pcxGray.GetSNR(pcxGray, pcxAfter).ToString("f2");
+
             // 清除圖表資料
             chart1.Series.Clear();
             chart1.ChartAreas["ChartArea1"].AxisX.StripLines.Clear();
@@ -89,6 +92,9 @@ namespace imageProcess
             pcxAfter = new ImgPcx(pcxGray);
             pcxAfter.Threshold(value);
             pictureBox2.Image = pcxAfter.pcxImg;
+
+            // 顯示SNR值 (到小數後2位)
+            textBox2.Text = pcxGray.GetSNR(pcxGray, pcxAfter).ToString("f2");
 
             // 清除圖表資料
             chart1.Series.Clear();
@@ -165,6 +171,8 @@ namespace imageProcess
                 pcxAfter = new ImgPcx(pcxGray);
                 pcxAfter.Threshold(value);
                 pictureBox2.Image = pcxAfter.pcxImg;
+                // 顯示SNR值 (到小數後2位)
+                textBox2.Text = pcxGray.GetSNR(pcxGray, pcxAfter).ToString("f2");
             }
         }
 
@@ -177,6 +185,8 @@ namespace imageProcess
             trackBar1.Value = threshold;
             textBox1.Text = threshold.ToString();
             pictureBox2.Image = pcxAfter.pcxImg;
+            // 顯示SNR值 (到小數後2位)
+            textBox2.Text = pcxGray.GetSNR(pcxGray, pcxAfter).ToString("f2");
         }
     }
 }

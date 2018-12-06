@@ -19,6 +19,8 @@ namespace imageProcess
             pcxAfter = new ImgPcx(pcxGray);
             pcxAfter.Highpass();
             pictureBox2.Image = pcxAfter.pcxImg;
+            // 顯示SNR值 (到小數後2位)
+            textBox1.Text = pcxGray.GetSNR(pcxGray, pcxAfter).ToString("f2");
         }
     }
 }

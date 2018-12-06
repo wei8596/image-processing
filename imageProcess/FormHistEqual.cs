@@ -79,6 +79,9 @@ namespace imageProcess
             pcxAfter.HistEqual(hist);
             pictureBox2.Image = pcxAfter.pcxImg;
 
+            // 顯示SNR值 (到小數後2位)
+            textBox1.Text = pcxGray.GetSNR(pcxGray, pcxAfter).ToString("f2");
+
             // 繪製Histogram Equalization後的直方圖
             chart2.Series.Clear();
             chart2.Size = chart1.Size;

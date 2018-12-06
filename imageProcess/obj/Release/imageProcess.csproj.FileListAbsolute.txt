@@ -4,14 +4,12 @@ D:\image_processing\course\imageProcess\imageProcess\bin\Release\imageProcess.pd
 D:\image_processing\course\imageProcess\imageProcess\obj\Release\imageProcess.FormBitPlane.resources
 D:\image_processing\course\imageProcess\imageProcess\obj\Release\imageProcess.FormGray.resources
 D:\image_processing\course\imageProcess\imageProcess\obj\Release\imageProcess.FormHistEqual.resources
-D:\image_processing\course\imageProcess\imageProcess\obj\Release\imageProcess.FormInvert.resources
 D:\image_processing\course\imageProcess\imageProcess\obj\Release\imageProcess.FormMain.resources
 D:\image_processing\course\imageProcess\imageProcess\obj\Release\imageProcess.FormMirror.resources
 D:\image_processing\course\imageProcess\imageProcess\obj\Release\imageProcess.FormRGB.resources
 D:\image_processing\course\imageProcess\imageProcess\obj\Release\imageProcess.FormRotate.resources
 D:\image_processing\course\imageProcess\imageProcess\obj\Release\imageProcess.FormThreshold.resources
 D:\image_processing\course\imageProcess\imageProcess\obj\Release\imageProcess.FormTransparency.resources
-D:\image_processing\course\imageProcess\imageProcess\obj\Release\imageProcess.FormZoom.resources
 D:\image_processing\course\imageProcess\imageProcess\obj\Release\imageProcess.Properties.Resources.resources
 D:\image_processing\course\imageProcess\imageProcess\obj\Release\imageProcess.Splashscreen.resources
 D:\image_processing\course\imageProcess\imageProcess\obj\Release\imageProcess.csproj.GenerateResource.cache
@@ -27,3 +25,12 @@ D:\image_processing\course\imageProcess\imageProcess\obj\Release\imageProcess.Fo
 D:\image_processing\course\imageProcess\imageProcess\obj\Release\imageProcess.FormMedian.resources
 D:\image_processing\course\imageProcess\imageProcess\obj\Release\imageProcess.FormOutlier.resources
 D:\image_processing\course\imageProcess\imageProcess\obj\Release\imageProcess.FormPseudoMedian.resources
+D:\image_processing\course\imageProcess\imageProcess\obj\Release\imageProcess.FormNegative.resources
+D:\image_processing\course\imageProcess\imageProcess\obj\Release\imageProcess.FormPrewitt.resources
+D:\image_processing\course\imageProcess\imageProcess\obj\Release\imageProcess.FormRoberts.resources
+D:\image_processing\course\imageProcess\imageProcess\obj\Release\imageProcess.FormSobel.resources
+D:\image_processing\course\imageProcess\imageProcess\obj\Release\imageProcess.FormScaling.resources
+D:\image_processing\course\imageProcess\imageProcess\obj\Release\imageProcess.csprojAssemblyReference.cache
+D:\image_processing\course\imageProcess\imageProcess\obj\Release\imageProcess.FormComponent.resources
+D:\image_processing\course\imageProcess\imageProcess\obj\Release\imageProcess.FormFractal.resources
+D:\image_processing\course\imageProcess\imageProcess\obj\Release\imageProcess.FormHuffman.resources

@@ -28,3 +28,10 @@ D:\image_processing\course\imageProcess\imageProcess\obj\Debug\imageProcess.Form
 D:\image_processing\course\imageProcess\imageProcess\obj\Debug\imageProcess.FormEdge.resources
 D:\image_processing\course\imageProcess\imageProcess\obj\Debug\imageProcess.FormNegative.resources
 D:\image_processing\course\imageProcess\imageProcess\obj\Debug\imageProcess.FormScaling.resources
+D:\image_processing\course\imageProcess\imageProcess\obj\Debug\imageProcess.FormPrewitt.resources
+D:\image_processing\course\imageProcess\imageProcess\obj\Debug\imageProcess.FormRoberts.resources
+D:\image_processing\course\imageProcess\imageProcess\obj\Debug\imageProcess.FormSobel.resources
+D:\image_processing\course\imageProcess\imageProcess\obj\Debug\imageProcess.FormFractal.resources
+D:\image_processing\course\imageProcess\imageProcess\obj\Debug\imageProcess.FormComponent.resources
+D:\image_processing\course\imageProcess\imageProcess\obj\Debug\imageProcess.FormHuffman.resources
+D:\image_processing\course\imageProcess\imageProcess\obj\Debug\imageProcess.FormSelect.resources

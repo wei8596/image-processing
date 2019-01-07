@@ -37,3 +37,5 @@
 
 ## Coding
 - Huffman Coding
+- Fractal
+![image](https://github.com/wei8596/image-processing/blob/master/fractal.png)
